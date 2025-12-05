@@ -1,7 +1,3 @@
-"""
-Application configuration management using Pydantic Settings.
-Loads configuration from environment variables and .env.production file.
-"""
 from pydantic_settings import BaseSettings
 from pydantic import field_validator, Field
 from typing import List
@@ -13,11 +9,11 @@ class Settings(BaseSettings):
     supabase_service_key: str = Field(default="", description="Supabase service role key (optional)")
     
     backend_url: str = Field(
-        default="http://localhost:8000",
+        default="https://web-version-of-desktop-app.onrender.com/",
         description="Backend"
     )
     cors_origins: str = Field(
-        default="http://localhost:5173",
+        default="https://web-version-app.vercel.app/",
         description="Frontend"
     )
     
