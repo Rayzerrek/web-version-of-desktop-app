@@ -1,14 +1,10 @@
-import dotenv from 'dotenv';
+export const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
-dotenv.config();
-
-export const API_BASE = process.env.BACKEND_CORS || 'http://localhost:8000';
 
 async function handleResponse(response: Response) {
   const contentType = response.headers.get('content-type') || ''
   const text = await response.text()
   if (!response.ok) {
-    // try to parse JSON error
     try {
       const json = contentType.includes('application/json') ? JSON.parse(text) : { message: text }
       throw new Error(json.message || JSON.stringify(json) || text)
