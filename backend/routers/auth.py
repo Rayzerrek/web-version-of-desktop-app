@@ -9,7 +9,6 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/login", response_model=AuthResponse)
 async def login_user(request: UserLogin):
-    """Login user with email and password"""
     try:
         supabase = get_supabase()
         response = supabase.auth.sign_in_with_password({
