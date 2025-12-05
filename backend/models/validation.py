@@ -3,9 +3,11 @@ from typing import Optional, Literal
 
 
 class CodeValidationRequest(BaseModel):
+    model_config = {"populate_by_name": True}
+    
     code: str = Field(..., max_length=10000, description="Code to validate")
     language: Literal["python", "javascript", "typescript"]
-    expected_output: str = Field(..., max_length=1000)
+    expected_output: str = Field(..., max_length=1000, alias="expectedOutput")
     
     @field_validator('code')
     def validate_code(cls, v):

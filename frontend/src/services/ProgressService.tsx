@@ -28,7 +28,7 @@ class ProgressService {
       throw new Error('No access token')
     }
 
-    return await apiFetch<UserProgress[]>(`/users/${encodeURIComponent(userId)}/progress`, {
+    return await apiFetch<UserProgress[]>(`/progress/users/${encodeURIComponent(userId)}`, {
       method: 'GET',
       headers: authHeaders(token),
     })

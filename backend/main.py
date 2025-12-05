@@ -20,7 +20,9 @@ from routers import (
     modules_router,
     lessons_router,
     progress_router,
-    search_router
+    search_router,
+    users_router,
+    achievements_router
 )
 
 # Configure logging
@@ -39,7 +41,7 @@ async def lifespan(app: FastAPI):
     
     yield
     
-    logger.info(f"👋 Shutting down {API_TITLE}...")
+    logger.info(f"Shutting down {API_TITLE}...")
 
 
 app = FastAPI(
@@ -114,6 +116,8 @@ app.include_router(modules_router)
 app.include_router(lessons_router)
 app.include_router(progress_router)
 app.include_router(search_router)
+app.include_router(users_router)
+app.include_router(achievements_router)
 
 
 @app.get("/")

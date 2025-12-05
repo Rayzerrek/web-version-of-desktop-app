@@ -1,7 +1,3 @@
-"""
-Supabase client initialization and management.
-Implements singleton pattern for efficient connection reuse.
-"""
 from supabase import create_client, Client
 from config import settings
 from typing import Optional
@@ -22,12 +18,6 @@ class SupabaseClientSingleton:
 
     @classmethod
     def get_client(cls) -> Client:
-        """
-        Get or create the regular Supabase client instance.
-        
-        Returns:
-            Supabase client with anonymous key access
-        """
         if cls._instance is None:
             if not cls._lock:
                 cls._lock = True
@@ -44,14 +34,6 @@ class SupabaseClientSingleton:
 
     @classmethod
     def get_admin_client(cls) -> Client:
-        """
-        Get or create the admin Supabase client instance.
-        
-        Uses service key if available, otherwise falls back to anonymous key.
-        
-        Returns:
-            Supabase client with admin access
-        """
         if cls._admin_instance is None:
             if not cls._lock:
                 cls._lock = True
@@ -87,25 +69,9 @@ class SupabaseClientSingleton:
 
 
 def get_supabase() -> Client:
-    """
-    Get the regular Supabase client instance.
-    
-    Convenience function for dependency injection.
-    
-    Returns:
-        Supabase client instance
-    """
     return SupabaseClientSingleton.get_client()
 
 
 def get_admin_supabase() -> Client:
-    """
-    Get the admin Supabase client instance.
-    
-    Convenience function for dependency injection.
-    
-    Returns:
-        Supabase admin client instance
-    """
     return SupabaseClientSingleton.get_admin_client()
 

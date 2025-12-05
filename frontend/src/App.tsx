@@ -4,7 +4,10 @@ import LessonDemo from './components/LessonDemo'
 import CourseDashboard from './components/CourseDashboard'
 import AdminPanel from './components/AdminPanel'
 import CodePlayground from './components/CodePlayground'
+import ThemeToggle from './components/ThemeToggle'
+import { UserProfileDropdown } from './components/UserProfileDropdown'
 import Toast, { type ToastType } from './components/Toast'
+import Button from './components/common/Button'
 import { lessonService } from './services/LessonService'
 import { useAuth } from './hooks/useAuth'
 import { apiFetch, authHeaders } from './services/ApiClient'
@@ -91,10 +94,10 @@ function App() {
       })
       setTimeout(() => setCurrentView('dashboard'), 1000)
       return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-purple-50 to-pink-50">
+        <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background-dark">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-slate-800">Brak dostępu</h1>
-            <p className="text-slate-600 mt-2">
+            <h1 className="text-2xl font-bold text-foreground dark:text-foreground-dark">Brak dostępu</h1>
+            <p className="text-muted dark:text-muted-dark mt-2">
               Tylko administratorzy mogą tutaj wejść
             </p>
           </div>
@@ -111,14 +114,16 @@ function App() {
   if (currentView === 'lesson') {
     return (
       <div>
-        <button
+        <Button
           onClick={() => {
             setCurrentView('dashboard')
           }}
-          className="fixed bottom-4 left-4 z-50 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition shadow-lg text-sm"
+          variant="secondary"
+          size="sm"
+          className="fixed bottom-4 left-4 z-50"
         >
           ← Powrót do kursów
-        </button>
+        </Button>
         <LessonDemo
           lessonId={selectedLessonId}
           onNextLesson={(nextLessonId) => {
@@ -132,7 +137,7 @@ function App() {
 
   if (isAuthenticated && currentView === 'dashboard') {
     return (
-      <div>
+      <div className="bg-background dark:bg-background-dark min-h-screen">
         {toast && (
           <Toast
             message={toast.message}
@@ -140,29 +145,39 @@ function App() {
             onClose={() => setToast(null)}
           />
         )}
+        <div className="fixed top-4 right-4 z-50">
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <UserProfileDropdown />
+          </div>
+        </div>
         <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
-          <button
+          <Button
             onClick={() => {
               logout()
             }}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition shadow-lg text-sm"
+            variant="danger"
+            size="sm"
           >
             Wyloguj
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setCurrentView('playground')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg text-sm"
+            variant="blue"
+            size="sm"
           >
             Code Playground
-          </button>
+          </Button>
         </div>
         {isAdmin && (
-          <button
+          <Button
             onClick={handleAdminAccess}
-            className="fixed bottom-4 right-4 z-50 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-lg text-sm flex items-center gap-2"
+            variant="purple"
+            size="sm"
+            className="fixed bottom-4 right-4 z-50 flex items-center gap-2"
           >
             Panel Admina
-          </button>
+          </Button>
         )}
         <CourseDashboard onCourseSelect={handleCourseSelect} />
       </div>
@@ -212,13 +227,15 @@ function App() {
   }
 
   return (
-    <div>
-      <button
+    <div className="bg-background dark:bg-background-dark min-h-screen">
+      <Button
         onClick={handleDevLogin}
-        className="fixed top-4 right-4 z-50 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-lg text-xs font-mono"
+        variant="purple"
+        size="sm"
+        className="fixed top-4 right-4 z-50 font-mono"
       >
         DEV: Skip to Dashboard
-      </button>
+      </Button>
       <AuthPanel onLoginSuccess={login} />
     </div>
   )

@@ -86,7 +86,7 @@ class CodeExecutor:
             try:
                 env = {**os.environ, "TS_NODE_TRANSPILE_ONLY": "true"}
                 result = subprocess.run(
-                    ["ts-node", temp_file],
+                    ["bun", "run", temp_file],
                     capture_output=True,
                     text=True,
                     timeout=self.timeout,

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models import ProgressCreate, ProgressResponse
-from supabase_client import get_supabase
+from supabase_client import get_supabase, get_admin_supabase
 from utils import get_access_token, handle_supabase_error
 
 
@@ -13,9 +13,8 @@ async def get_user_progress(
     user_id: str,
     token: str = Depends(get_access_token)
 ):
-    """Get user's progress for all lessons"""
     try:
-        supabase = get_supabase()
+        supabase = get_admin_supabase()
         response = supabase.table("user_progress") \
             .select("*") \
             .eq("user_id", user_id) \
@@ -31,9 +30,8 @@ async def update_lesson_progress(
     progress: ProgressCreate,
     token: str = Depends(get_access_token)
 ):
-    """Update or create lesson progress"""
     try:
-        supabase = get_supabase()
+        supabase = get_admin_supabase()
         
         # Check if progress exists
         existing = supabase.table("user_progress") \
