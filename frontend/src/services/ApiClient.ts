@@ -1,4 +1,8 @@
-export const API_BASE = 'http://localhost:8000'
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const API_BASE = process.env.BACKEND_CORS || 'http://localhost:8000';
 
 async function handleResponse(response: Response) {
   const contentType = response.headers.get('content-type') || ''
