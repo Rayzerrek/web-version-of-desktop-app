@@ -40,7 +40,7 @@ export default function LessonSuccessModal({
             '0 25px 80px rgba(0, 0, 0, 0.25), 0 10px 30px rgba(0, 0, 0, 0.15)',
         }}
       >
-        <div className="relative bg-linear-to-br from-green-500 via-emerald-600 to-teal-600 p-10 text-center">
+        <div className="relative bg-green-500 p-10 text-center">
           <div className="relative mb-6">
             <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-2xl">
               <svg
@@ -75,7 +75,7 @@ export default function LessonSuccessModal({
             </div>
           </div>
 
-          <div className="bg-linear-to-r from-amber-400 to-orange-500 rounded-2xl p-6 mb-6 text-center shadow-lg">
+          <div className="bg-amber-400 rounded-2xl p-6 mb-6 text-center shadow-lg">
             <div className="text-white text-5xl font-bold mb-1">
               +{xpReward} XP
             </div>
@@ -108,7 +108,7 @@ export default function LessonSuccessModal({
           <div className="space-y-3">
             <button
               onClick={onNextLesson}
-              className="w-full bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full bg-green-600 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Następna lekcja
             </button>

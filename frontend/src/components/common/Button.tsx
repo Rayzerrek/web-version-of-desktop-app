@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'purple' | 'blue'
+type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'purple' | 'blue' | 'empty'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -18,6 +18,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     success: 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl',
     purple: 'bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 text-white shadow-lg hover:shadow-xl',
     blue: 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl',
+    empty:'',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -27,7 +28,7 @@ const sizeStyles: Record<ButtonSize, string> = {
 }
 
 export default function Button({
-    variant = 'primary',
+    variant = 'empty',
     size = 'md',
     children,
     fullWidth = false,

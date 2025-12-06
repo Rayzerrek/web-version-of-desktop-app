@@ -134,7 +134,7 @@ export default function SearchBar({
   return (
     <div ref={searchRef} className={`relative w-full max-w-2xl ${className}`}>
       <div className="relative group">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-600 transition-colors">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 0 transition-colors">
           {isLoading ? (
             <FiLoader className="w-5 h-5 animate-spin text-purple-600" />
           ) : (
@@ -154,10 +154,10 @@ export default function SearchBar({
           placeholder={placeholder}
           className="w-full pl-12 pr-12 py-4 bg-surface-container rounded-full
                              text-slate-900 placeholder-slate-500
-                             focus:outline-none focus:ring-0
+                             focus:outline-1 focus:ring-0
                              transition-all duration-300 ease-out
                              shadow-md hover:shadow-lg focus:shadow-xl
-                             border border-transparent focus:border-purple-300"
+                             border border-transparent"
           style={{
             backgroundColor: "#F3F4F6",
           }}

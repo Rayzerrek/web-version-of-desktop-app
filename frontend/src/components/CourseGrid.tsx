@@ -42,7 +42,7 @@ export default function CourseGrid({
         return (
           <div
             key={course.id}
-            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-200 border border-slate-100 overflow-hidden cursor-pointer"
+            className="bg-white rounded-2xl dark:bg-slate-800 dark:border-slate-700 shadow-md hover:shadow-xl transition-shadow duration-200 border border-slate-100 overflow-hidden cursor-pointer"
             onClick={() => onCourseSelect(course.id)}
             role="button"
             tabIndex={0}
@@ -68,10 +68,10 @@ export default function CourseGrid({
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                     {course.title}
                   </h3>
-                  <p className="text-sm text-slate-500 mt-1 line-clamp-2">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">
                     {course.description}
                   </p>
                 </div>
@@ -79,7 +79,7 @@ export default function CourseGrid({
 
               <div className="mt-4 flex items-center justify-between text-sm text-slate-500">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300" style={course.difficulty === 'beginner' ? { backgroundColor: '#d1fae5', color: '#065f46' } : course.difficulty === 'intermediate' ? { backgroundColor: '#fef3c7', color: '#92400e' } : course.difficulty === 'advanced' ? { backgroundColor: '#fee2e2', color: '#991b1b' } : {}}>
                     {difficultyLabel(course.difficulty)}
                   </span>
                   {course.estimatedHours && (

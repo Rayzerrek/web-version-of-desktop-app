@@ -134,7 +134,7 @@ export default function LessonEditDialog({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-6 text-white">
+        <div className="bg-black p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Edytuj lekcję</h2>
@@ -415,7 +415,7 @@ export default function LessonEditDialog({
           <button
             onClick={handleSave}
             disabled={loading || saving || !formData.title}
-            className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 disabled:from-slate-300 disabled:to-slate-400 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg"
+            className="flex-1 py-3 bg-black disabled:bg-slate-300 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg"
           >
             {saving ? 'Zapisywanie...' : 'Zapisz zmiany'}
           </button>

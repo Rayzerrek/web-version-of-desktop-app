@@ -70,7 +70,7 @@ export default function LessonDemo({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-slate-600 dark:text-slate-300">Ładowanie lekcji...</p>
         </div>
@@ -80,7 +80,7 @@ export default function LessonDemo({
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-slate-600 dark:text-slate-300">Lekcja nie znaleziona</p>
         </div>
@@ -172,7 +172,7 @@ export default function LessonDemo({
         xpReward={lesson.xpReward}
         lessonTitle={lesson.title}
       />
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-3">
@@ -229,7 +229,7 @@ export default function LessonDemo({
                 )}
 
               {lesson.content.type === 'exercise' && (
-                <div className="bg-linear-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
+                <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
                     Twoje zadanie
                   </h3>
@@ -248,7 +248,7 @@ export default function LessonDemo({
               )}
 
               <div
-                className="flex items-center justify-between bg-linear-to-r from-amber-400 to-orange-500 rounded-2xl p-5 shadow-lg"
+                className="flex items-center justify-between bg-amber-400 rounded-2xl p-5 shadow-lg"
               >
                 <span className="text-white font-semibold">
                   Nagroda za ukończenie
@@ -325,7 +325,7 @@ export default function LessonDemo({
 
               {isCorrect === false && (
                 <div
-                  className="rounded-3xl p-6 bg-linear-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 border border-red-200 dark:border-red-800 shadow-lg"
+                  className="rounded-3xl p-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 shadow-lg"
                 >
                   <div className="mb-3">
                     <h3 className="text-2xl font-bold text-red-600 dark:text-red-400">

@@ -172,9 +172,8 @@ function App() {
         {isAdmin && (
           <Button
             onClick={handleAdminAccess}
-            variant="purple"
             size="sm"
-            className="fixed bottom-4 right-4 z-50 flex items-center gap-2"
+            className="fixed bottom-4 right-4 bg-black text-white"
           >
             Panel Admina
           </Button>
@@ -228,14 +227,17 @@ function App() {
 
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen">
-      <Button
-        onClick={handleDevLogin}
-        variant="purple"
-        size="sm"
-        className="fixed top-4 right-4 z-50 font-mono"
-      >
-        DEV: Skip to Dashboard
-      </Button>
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <ThemeToggle />
+        <Button
+          onClick={handleDevLogin}
+          variant="purple"
+          size="sm"
+          className="font-mono"
+        >
+          DEV: Skip to Dashboard
+        </Button>
+      </div>
       <AuthPanel onLoginSuccess={login} />
     </div>
   )

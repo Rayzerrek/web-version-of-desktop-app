@@ -31,6 +31,7 @@ export default function ThemeToggle() {
 
     const toggleTheme = () => {
         setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+        console.log(theme)
     };
 
     return (
