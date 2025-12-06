@@ -55,7 +55,6 @@ async def get_user_profile(
     try:
         supabase = get_admin_supabase()
         
-        # Get user from auth.users for email and created_at
         user_response = supabase.auth.admin.get_user_by_id(user_id)
         
         if not user_response or not user_response.user:
@@ -63,14 +62,12 @@ async def get_user_profile(
         
         user = user_response.user
         
-        # Get profile data from profiles table
         profile_response = supabase.table("profiles") \
             .select("*") \
             .eq("id", user_id) \
             .execute()
         
         if not profile_response.data:
-            # Create profile if it doesn't exist
             profile_data = {
                 "id": user_id,
                 "username": user.email.split("@")[0] if user.email else "User",
@@ -112,7 +109,6 @@ async def get_user_statistics(
     try:
         supabase = get_admin_supabase()
         
-        # Count completed lessons from user_progress
         lessons_response = supabase.table("user_progress") \
             .select("*", count="exact") \
             .eq("user_id", user_id) \
@@ -121,7 +117,6 @@ async def get_user_statistics(
         
         total_lessons = lessons_response.count or 0
         
-        # Calculate total time spent from user_progress
         total_time_seconds = 0
         total_score = 0
         score_count = 0
@@ -133,7 +128,6 @@ async def get_user_statistics(
                     total_score += progress.get("score", 0)
                     score_count += 1
         
-        # Also check daily_activity for time spent
         activity_response = supabase.table("daily_activity") \
             .select("time_spent_seconds") \
             .eq("user_id", user_id) \
@@ -147,10 +141,10 @@ async def get_user_statistics(
         
         return UserStatistics(
             total_lessons_completed=total_lessons,
-            total_courses_completed=0,  # Would need to check all lessons in courses
+            total_courses_completed=0,  
             total_minutes_spent=total_time_seconds // 60,
             average_score=average_score,
-            lessons_this_week=0  # Could be calculated from daily_activity
+            lessons_this_week=0  
         )
     except Exception as e:
         handle_supabase_error(e, "Failed to fetch user statistics")
@@ -166,14 +160,12 @@ async def update_user_avatar(
     try:
         supabase = get_admin_supabase()
         
-        # Check if profile exists
         existing = supabase.table("profiles") \
             .select("*") \
             .eq("id", user_id) \
             .execute()
         
         if existing.data:
-            # Update existing profile
             supabase.table("profiles") \
                 .update({"avatar_url": request.avatar_url, "updated_at": "now()"}) \
                 .eq("id", user_id) \
@@ -198,14 +190,12 @@ async def update_user_username(
     try:
         supabase = get_admin_supabase()
         
-        # Check if profile exists
         existing = supabase.table("profiles") \
             .select("*") \
             .eq("id", user_id) \
             .execute()
         
         if existing.data:
-            # Update existing profile
             supabase.table("profiles") \
                 .update({"username": request.username, "updated_at": "now()"}) \
                 .eq("id", user_id) \

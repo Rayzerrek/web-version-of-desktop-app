@@ -1,4 +1,3 @@
-"""Search and code validation routes"""
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List
 from models import SearchQuery, SearchResult, CodeValidationRequest, CodeValidationResponse
