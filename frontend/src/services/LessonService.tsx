@@ -81,10 +81,10 @@ export class LessonService {
         difficulty: courseData.difficulty,
         language: courseData.language,
         color: courseData.color,
-        order_index: 0,
-        is_published: courseData.isPublished,
-        estimated_hours: courseData.estimatedHours,
-        icon_url: courseData.iconUrl,
+        orderIndex: 0,
+        isPublished: courseData.isPublished,
+        estimatedHours: courseData.estimatedHours,
+        iconUrl: courseData.iconUrl,
       }),
     })
   }
@@ -98,8 +98,8 @@ export class LessonService {
         course_id: moduleData.course_id,
         title: moduleData.title,
         description: moduleData.description,
-        order_index: moduleData.orderIndex,
-        icon_emoji: moduleData.iconEmoji,
+        orderIndex: moduleData.orderIndex,
+        iconEmoji: moduleData.iconEmoji,
       }),
     })
   }

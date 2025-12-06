@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models import ModuleCreate, ModuleUpdate, ModuleResponse
 from supabase_client import get_admin_supabase
-from utils import require_admin, handle_supabase_error
+from utils import require_admin, handle_supabase_error, convert_dict_keys_to_snake
 
 
 router = APIRouter(prefix="/modules", tags=["Modules"])
@@ -15,14 +15,16 @@ async def create_module(
 ):
     try:
         supabase = get_admin_supabase()
-        response = supabase.table("modules").insert(module.model_dump()).execute()
+        # Convert camelCase to snake_case for database
+        module_data = convert_dict_keys_to_snake(module.model_dump())
+        response = supabase.table("modules").insert(module_data).execute()
         
         if not response.data:
             raise HTTPException(status_code=500, detail="Failed to create module")
         
-        module_data = response.data[0]
-        module_data["lessons"] = []
-        return module_data
+        result = response.data[0]
+        result["lessons"] = []
+        return result
     except HTTPException:
         raise
     except Exception as e:
@@ -37,7 +39,9 @@ async def update_module(
 ):
     try:
         supabase = get_admin_supabase()
-        update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
+        # Convert camelCase to snake_case for database
+        raw_data = {k: v for k, v in updates.model_dump().items() if v is not None}
+        update_data = convert_dict_keys_to_snake(raw_data)
         
         response = supabase.table("modules") \
             .update(update_data) \

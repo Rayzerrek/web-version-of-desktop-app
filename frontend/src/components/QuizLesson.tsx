@@ -23,6 +23,31 @@ export default function QuizLesson({
 
     const quizContent = lesson.content as QuizLessonType
 
+    // Safety check for invalid quiz content
+    if (!quizContent || !quizContent.question || !quizContent.options || quizContent.options.length === 0) {
+        return (
+            <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
+                <div className="max-w-3xl mx-auto">
+                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 text-center">
+                        <div className="text-6xl mb-4">⚠️</div>
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                            Nieprawidłowe dane quizu
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-300 mb-6">
+                            Ten quiz nie został jeszcze prawidłowo skonfigurowany. Skontaktuj się z administratorem.
+                        </p>
+                        <button
+                            onClick={() => onNextLesson?.(lessonId)}
+                            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition"
+                        >
+                            Przejdź dalej
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     const handleSelectOption = (index: number) => {
         if (showFeedback) return
 

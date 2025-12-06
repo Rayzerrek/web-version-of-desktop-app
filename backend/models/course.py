@@ -60,10 +60,10 @@ class ProjectContent(LessonContentBase):
 # Lesson Models
 class LessonBase(BaseModel):
     title: str
-    description: str
+    description: Optional[str] = ""
     lessonType: LessonType
     language: Language
-    orderIndex: int
+    orderIndex: int = 0
     xpReward: int = 10
     estimatedMinutes: int = 15
     isLocked: bool = False
@@ -92,10 +92,10 @@ class LessonResponse(BaseModel):
     id: str
     module_id: str
     title: str
-    description: str
+    description: Optional[str] = ""
     lessonType: LessonType = Field(validation_alias='lesson_type')
     language: Language
-    orderIndex: int = Field(validation_alias='order_index')
+    orderIndex: int = Field(default=0, validation_alias='order_index')
     xpReward: int = Field(default=10, validation_alias='xp_reward')
     estimatedMinutes: int = Field(default=15, validation_alias='estimated_minutes')
     isLocked: bool = Field(default=False, validation_alias='is_locked')

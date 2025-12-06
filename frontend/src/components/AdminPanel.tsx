@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Course, Module, Lesson } from '../types/lesson'
 import { lessonService } from '../services/LessonService'
-import { createExerciseContent } from '../utils/lessonHelpers'
+import { createExerciseContent, createQuizContent } from '../utils/lessonHelpers'
 import LessonEditDialog from './LessonEditDialog'
 
 interface AdminPanelProps {
@@ -74,6 +74,15 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
     expectedOutput: '',
     exampleCode: '',
     exampleDescription: '',
+    // Quiz fields
+    quizQuestion: '',
+    quizExplanation: '',
+    quizOptions: [
+      { text: '', isCorrect: false, explanation: '' },
+      { text: '', isCorrect: false, explanation: '' },
+      { text: '', isCorrect: false, explanation: '' },
+      { text: '', isCorrect: false, explanation: '' },
+    ] as Array<{ text: string; isCorrect: boolean; explanation: string }>,
   })
 
   const handleCreateLesson = async () => {
@@ -83,15 +92,40 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
     }
 
     try {
-      const lessonContent = createExerciseContent({
-        instruction: newLesson.instruction,
-        starterCode: newLesson.starterCode,
-        solution: newLesson.solution,
-        hint: newLesson.hint,
-        expectedOutput: newLesson.expectedOutput,
-        exampleCode: newLesson.exampleCode,
-        exampleDescription: newLesson.exampleDescription,
-      })
+      let lessonContent;
+
+      if (newLesson.lessonType === 'quiz') {
+        // Validate quiz data
+        const validOptions = newLesson.quizOptions.filter(opt => opt.text.trim() !== '')
+        if (validOptions.length < 2) {
+          alert('Quiz musi mieć co najmniej 2 opcje odpowiedzi!')
+          return
+        }
+        if (!validOptions.some(opt => opt.isCorrect)) {
+          alert('Co najmniej jedna odpowiedź musi być oznaczona jako poprawna!')
+          return
+        }
+        if (!newLesson.quizQuestion.trim()) {
+          alert('Pytanie quizu jest wymagane!')
+          return
+        }
+
+        lessonContent = createQuizContent({
+          question: newLesson.quizQuestion,
+          options: validOptions,
+          explanation: newLesson.quizExplanation || undefined,
+        })
+      } else {
+        lessonContent = createExerciseContent({
+          instruction: newLesson.instruction,
+          starterCode: newLesson.starterCode,
+          solution: newLesson.solution,
+          hint: newLesson.hint,
+          expectedOutput: newLesson.expectedOutput,
+          exampleCode: newLesson.exampleCode,
+          exampleDescription: newLesson.exampleDescription,
+        })
+      }
 
       await lessonService.createLesson({
         module_id: selectedModule.id,
@@ -121,6 +155,14 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
         expectedOutput: '',
         exampleCode: '',
         exampleDescription: '',
+        quizQuestion: '',
+        quizExplanation: '',
+        quizOptions: [
+          { text: '', isCorrect: false, explanation: '' },
+          { text: '', isCorrect: false, explanation: '' },
+          { text: '', isCorrect: false, explanation: '' },
+          { text: '', isCorrect: false, explanation: '' },
+        ],
       })
 
       loadCourses()
@@ -1012,6 +1054,132 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
                           placeholder="Hello World"
                         />
                       </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Quiz-specific fields */}
+                {newLesson.lessonType === 'quiz' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Pytanie quizu *
+                      </label>
+                      <textarea
+                        value={newLesson.quizQuestion}
+                        onChange={(e) =>
+                          setNewLesson({
+                            ...newLesson,
+                            quizQuestion: e.target.value,
+                          })
+                        }
+                        required
+                        rows={3}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                        placeholder="np. Która z poniższych funkcji służy do wyświetlania tekstu w Pythonie?"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Opcje odpowiedzi *
+                      </label>
+                      <p className="text-xs text-slate-500 mb-3">
+                        Dodaj minimum 2 opcje. Zaznacz poprawną odpowiedź.
+                      </p>
+                      <div className="space-y-3">
+                        {newLesson.quizOptions.map((option, index) => (
+                          <div
+                            key={index}
+                            className={`p-4 rounded-xl border-2 transition-all ${
+                              option.isCorrect
+                                ? 'border-green-500 bg-green-50'
+                                : 'border-slate-200 bg-white'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updatedOptions = newLesson.quizOptions.map(
+                                    (opt, i) => ({
+                                      ...opt,
+                                      isCorrect: i === index,
+                                    })
+                                  )
+                                  setNewLesson({
+                                    ...newLesson,
+                                    quizOptions: updatedOptions,
+                                  })
+                                }}
+                                className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-2 transition-all ${
+                                  option.isCorrect
+                                    ? 'border-green-500 bg-green-500 text-white'
+                                    : 'border-slate-300 hover:border-green-400'
+                                }`}
+                              >
+                                {option.isCorrect && (
+                                  <span className="text-sm">✓</span>
+                                )}
+                              </button>
+                              <div className="flex-1 space-y-2">
+                                <input
+                                  type="text"
+                                  value={option.text}
+                                  onChange={(e) => {
+                                    const updatedOptions = [...newLesson.quizOptions]
+                                    updatedOptions[index] = {
+                                      ...updatedOptions[index],
+                                      text: e.target.value,
+                                    }
+                                    setNewLesson({
+                                      ...newLesson,
+                                      quizOptions: updatedOptions,
+                                    })
+                                  }}
+                                  className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
+                                  placeholder={`Opcja ${index + 1}`}
+                                />
+                                <input
+                                  type="text"
+                                  value={option.explanation}
+                                  onChange={(e) => {
+                                    const updatedOptions = [...newLesson.quizOptions]
+                                    updatedOptions[index] = {
+                                      ...updatedOptions[index],
+                                      explanation: e.target.value,
+                                    }
+                                    setNewLesson({
+                                      ...newLesson,
+                                      quizOptions: updatedOptions,
+                                    })
+                                  }}
+                                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                                  placeholder="Wyjaśnienie (opcjonalne) - pojawi się po wybraniu tej odpowiedzi"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Ogólne wyjaśnienie (opcjonalne)
+                      </label>
+                      <textarea
+                        value={newLesson.quizExplanation}
+                        onChange={(e) =>
+                          setNewLesson({
+                            ...newLesson,
+                            quizExplanation: e.target.value,
+                          })
+                        }
+                        rows={3}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                        placeholder="Wyjaśnienie które pojawi się po udzieleniu odpowiedzi"
+                      />
                     </div>
                   </>
                 )}
