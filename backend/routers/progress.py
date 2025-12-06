@@ -30,6 +30,7 @@ async def update_lesson_progress(
     progress: ProgressCreate,
     token: str = Depends(get_access_token)
 ):
+    """Update lesson progress. XP is calculated dynamically from completed lessons."""
     try:
         supabase = get_admin_supabase()
         

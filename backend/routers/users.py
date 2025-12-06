@@ -51,7 +51,7 @@ async def get_user_profile(
     user_id: str,
     token: str = Depends(get_access_token)
 ):
-    """Get user profile with XP, level, and streak data from profiles table"""
+    """Get user profile with XP calculated from completed lessons (like desktop app)"""
     try:
         supabase = get_admin_supabase()
         
@@ -71,7 +71,6 @@ async def get_user_profile(
             profile_data = {
                 "id": user_id,
                 "username": user.email.split("@")[0] if user.email else "User",
-                "total_xp": 0,
                 "streak_days": 0
             }
             supabase.table("profiles").insert(profile_data).execute()
@@ -79,7 +78,20 @@ async def get_user_profile(
         else:
             profile = profile_response.data[0]
         
-        total_xp = profile.get("total_xp", 0) or 0
+        # Calculate XP dynamically from completed lessons (like desktop app)
+        completed_progress = supabase.table("user_progress") \
+            .select("lesson_id, lessons(xp_reward)") \
+            .eq("user_id", user_id) \
+            .eq("status", "completed") \
+            .execute()
+        
+        total_xp = 0
+        if completed_progress.data:
+            for progress in completed_progress.data:
+                lesson_data = progress.get("lessons")
+                if lesson_data and lesson_data.get("xp_reward"):
+                    total_xp += lesson_data["xp_reward"]
+        
         streak_days = profile.get("streak_days", 0) or 0
         
         return UserProfile(
@@ -90,7 +102,7 @@ async def get_user_profile(
             total_xp=total_xp,
             level=calculate_level(total_xp),
             current_streak_days=streak_days,
-            longest_streak_days=streak_days,  # Could be tracked separately if needed
+            longest_streak_days=streak_days,
             joined_at=str(user.created_at) if user.created_at else None,
             role=profile.get("role", "user")
         )
