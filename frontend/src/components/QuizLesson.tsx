@@ -64,7 +64,7 @@ export default function QuizLesson({
                 isOpen={showSuccessModal}
                 onClose={() => setShowSuccessModal(false)}
                 onNextLesson={handleNextLesson}
-                xpReward={lesson.xp_reward}
+                xpReward={lesson.xpReward}
                 lessonTitle={lesson.title}
             />
 
@@ -228,7 +228,7 @@ export default function QuizLesson({
                                     Nagroda za ukończenie
                                 </span>
                                 <span className="text-3xl font-bold text-white">
-                                    +{lesson.xp_reward} XP
+                                    +{lesson.xpReward} XP
                                 </span>
                             </div>
                         )}

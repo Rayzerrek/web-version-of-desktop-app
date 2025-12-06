@@ -438,7 +438,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
                             </h4>
                             <p className="text-sm text-slate-600">
                               {course.title} • {lesson.language} •{' '}
-                              {lesson.xp_reward} XP
+                              {lesson.xpReward} XP
                             </p>
                           </div>
                           <div className="flex gap-2">

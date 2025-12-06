@@ -61,7 +61,7 @@ export default function LessonEditDialog({
         description: data.description || '',
         language: data.language as any,
         lessonType: data.lessonType as any,
-        xpReward: data.xp_reward,
+        xpReward: data.xpReward,
         instruction: isExercise ? content.instruction : '',
         starterCode: isExercise ? content.starterCode : '',
         solution: isExercise ? content.solution : '',

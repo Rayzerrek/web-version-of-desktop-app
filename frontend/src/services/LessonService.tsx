@@ -35,7 +35,7 @@ export class LessonService {
           ...l,
           lessonType: l.lesson_type ?? l.lessonType,
           orderIndex: l.order_index ?? l.orderIndex,
-          xp_reward: l.xp_reward ?? l.xpReward ?? l.xp_reward,
+          xpReward: l.xpReward ?? l.xp_reward ?? 10,
           estimatedMinutes: l.estimated_minutes ?? l.estimatedMinutes,
           isLocked: l.is_locked ?? l.isLocked,
         })),

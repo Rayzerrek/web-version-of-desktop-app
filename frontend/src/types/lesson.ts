@@ -86,7 +86,7 @@ interface Lesson {
   lessonType: LessonType
   content: LessonContent
   language: 'python' | 'javascript' | 'html' | 'css' | 'typescript'
-  xp_reward: number
+  xpReward: number
   orderIndex: number
   isLocked?: boolean
   estimatedMinutes?: number
