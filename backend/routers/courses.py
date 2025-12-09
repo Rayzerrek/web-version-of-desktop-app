@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from models import CourseCreate, CourseUpdate, CourseResponse
 from supabase_client import get_supabase, get_admin_supabase
-from utils import get_access_token, require_admin, handle_supabase_error, convert_dict_keys_to_snake
+from utils import get_access_token, require_admin, handle_supabase_error
 
 
 router = APIRouter(prefix="/courses", tags=["Courses"])
@@ -53,8 +53,8 @@ async def create_course(
     """Create new course (admin only)"""
     try:
         supabase = get_admin_supabase()
-        # Convert camelCase to snake_case for database
-        course_data = convert_dict_keys_to_snake(course.model_dump())
+        # Use by_alias=True to convert camelCase to snake_case for database
+        course_data = course.model_dump(by_alias=True)
         response = supabase.table("courses").insert(course_data).execute()
         
         if not response.data:
@@ -78,12 +78,11 @@ async def update_course(
     """Update course (admin only)"""
     try:
         supabase = get_admin_supabase()
-        # Convert camelCase to snake_case for database
-        raw_data = {k: v for k, v in updates.model_dump().items() if v is not None}
-        update_data = convert_dict_keys_to_snake(raw_data)
+        # Use by_alias=True to convert camelCase to snake_case for database
+        raw_data = {k: v for k, v in updates.model_dump(by_alias=True).items() if v is not None}
         
         response = supabase.table("courses") \
-            .update(update_data) \
+            .update(raw_data) \
             .eq("id", course_id) \
             .execute()
         

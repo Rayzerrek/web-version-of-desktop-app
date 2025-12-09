@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models import ModuleCreate, ModuleUpdate, ModuleResponse
 from supabase_client import get_admin_supabase
-from utils import require_admin, handle_supabase_error, convert_dict_keys_to_snake
+from utils import require_admin, handle_supabase_error
 
 
 router = APIRouter(prefix="/modules", tags=["Modules"])
@@ -15,8 +15,7 @@ async def create_module(
 ):
     try:
         supabase = get_admin_supabase()
-        # Convert camelCase to snake_case for database
-        module_data = convert_dict_keys_to_snake(module.model_dump())
+        module_data = module.model_dump(by_alias=True)
         response = supabase.table("modules").insert(module_data).execute()
         
         if not response.data:
@@ -39,12 +38,11 @@ async def update_module(
 ):
     try:
         supabase = get_admin_supabase()
-        # Convert camelCase to snake_case for database
-        raw_data = {k: v for k, v in updates.model_dump().items() if v is not None}
-        update_data = convert_dict_keys_to_snake(raw_data)
+        # Use by_alias=True to convert camelCase to snake_case for database
+        raw_data = {k: v for k, v in updates.model_dump(by_alias=True).items() if v is not None}
         
         response = supabase.table("modules") \
-            .update(update_data) \
+            .update(raw_data) \
             .eq("id", module_id) \
             .execute()
         

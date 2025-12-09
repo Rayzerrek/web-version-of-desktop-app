@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models import LessonCreate, LessonUpdate, LessonResponse
 from supabase_client import get_supabase, get_admin_supabase
-from utils import get_access_token, require_admin, handle_supabase_error, convert_dict_keys_to_snake
+from utils import get_access_token, require_admin, handle_supabase_error
 
 
 router = APIRouter(prefix="/lessons", tags=["Lessons"])
@@ -37,8 +37,8 @@ async def create_lesson(
 ):
     try:
         supabase = get_admin_supabase()
-        # Convert camelCase to snake_case for database
-        lesson_data = convert_dict_keys_to_snake(lesson.model_dump())
+        # Use by_alias=True to convert camelCase to snake_case for database
+        lesson_data = lesson.model_dump(by_alias=True)
         response = supabase.table("lessons").insert(lesson_data).execute()
         
         if not response.data:
@@ -59,12 +59,11 @@ async def update_lesson(
 ):
     try:
         supabase = get_admin_supabase()
-        # Convert camelCase to snake_case for database
-        raw_data = {k: v for k, v in updates.model_dump().items() if v is not None}
-        update_data = convert_dict_keys_to_snake(raw_data)
+        # Use by_alias=True to convert camelCase to snake_case for database
+        raw_data = {k: v for k, v in updates.model_dump(by_alias=True).items() if v is not None}
         
         response = supabase.table("lessons") \
-            .update(update_data) \
+            .update(raw_data) \
             .eq("id", lesson_id) \
             .execute()
         

@@ -33,7 +33,6 @@ async def update_lesson_progress(
     try:
         supabase = get_admin_supabase()
         
-        # Check if progress exists
         existing = supabase.table("user_progress") \
             .select("*") \
             .eq("user_id", progress.user_id) \
@@ -41,7 +40,6 @@ async def update_lesson_progress(
             .execute()
         
         if existing.data:
-            # Update existing progress
             update_data = progress.model_dump()
             del update_data["user_id"]
             del update_data["lesson_id"]
@@ -56,7 +54,6 @@ async def update_lesson_progress(
             
             return response.data[0]
         else:
-            # Create new progress
             response = supabase.table("user_progress") \
                 .insert(progress.model_dump()) \
                 .execute()

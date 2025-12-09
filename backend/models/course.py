@@ -1,15 +1,22 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, AliasGenerator
+from pydantic.alias_generators import to_snake
 from typing import Optional, List, Literal, Any
 from datetime import datetime
 
 
-# Enums
 Difficulty = Literal["beginner", "intermediate", "advanced"]
 Language = Literal["python", "javascript", "typescript", "html", "css", "java"]
 LessonType = Literal["theory", "exercise", "quiz", "project"]
 
 
-# Lesson Content Models
+# Base config for models that need camelCase -> snake_case conversion for DB
+snake_case_config = ConfigDict(
+    populate_by_name=True,
+    alias_generator=AliasGenerator(
+        serialization_alias=to_snake,
+    )
+)
+
 class LessonContentBase(BaseModel):
     type: LessonType
 
@@ -57,8 +64,9 @@ class ProjectContent(LessonContentBase):
     hints: Optional[List[str]] = None
 
 
-# Lesson Models
 class LessonBase(BaseModel):
+    model_config = snake_case_config
+    
     title: str
     description: Optional[str] = ""
     lessonType: LessonType
@@ -75,6 +83,8 @@ class LessonCreate(LessonBase):
 
 
 class LessonUpdate(BaseModel):
+    model_config = snake_case_config
+    
     title: Optional[str] = None
     description: Optional[str] = None
     lessonType: Optional[LessonType] = None
@@ -106,6 +116,8 @@ class LessonResponse(BaseModel):
 
 # Module Models
 class ModuleBase(BaseModel):
+    model_config = snake_case_config
+    
     title: str
     description: str
     orderIndex: int
@@ -117,6 +129,8 @@ class ModuleCreate(ModuleBase):
 
 
 class ModuleUpdate(BaseModel):
+    model_config = snake_case_config
+    
     title: Optional[str] = None
     description: Optional[str] = None
     orderIndex: Optional[int] = None
@@ -136,8 +150,9 @@ class ModuleResponse(BaseModel):
     created_at: datetime
 
 
-# Course Models
 class CourseBase(BaseModel):
+    model_config = snake_case_config
+    
     title: str
     description: str
     difficulty: Difficulty
@@ -153,6 +168,8 @@ class CourseCreate(CourseBase):
 
 
 class CourseUpdate(BaseModel):
+    model_config = snake_case_config
+    
     title: Optional[str] = None
     description: Optional[str] = None
     difficulty: Optional[Difficulty] = None

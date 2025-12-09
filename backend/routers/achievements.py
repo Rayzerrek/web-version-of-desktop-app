@@ -38,7 +38,6 @@ class UnlockResponse(BaseModel):
 async def get_all_achievements(
     token: str = Depends(get_access_token)
 ):
-    """Get all available achievements"""
     try:
         supabase = get_admin_supabase()
         
@@ -56,11 +55,9 @@ async def get_user_achievements(
     user_id: str,
     token: str = Depends(get_access_token)
 ):
-    """Get achievements unlocked by a specific user"""
     try:
         supabase = get_admin_supabase()
         
-        # Get user achievements with achievement details
         response = supabase.table("user_achievements") \
             .select("*, achievements(*)") \
             .eq("user_id", user_id) \
@@ -90,11 +87,9 @@ async def check_and_unlock_achievements(
     user_id: str,
     token: str = Depends(get_access_token)
 ):
-    """Check user progress and unlock any earned achievements"""
     try:
         supabase = get_admin_supabase()
         
-        # Get user profile for XP and streak
         profile_response = supabase.table("profiles") \
             .select("total_xp, streak_days") \
             .eq("id", user_id) \
@@ -107,7 +102,6 @@ async def check_and_unlock_achievements(
         total_xp = profile.get("total_xp", 0) or 0
         streak_days = profile.get("streak_days", 0) or 0
         
-        # Get completed lessons count
         progress_response = supabase.table("user_progress") \
             .select("*", count="exact") \
             .eq("user_id", user_id) \
@@ -116,7 +110,6 @@ async def check_and_unlock_achievements(
         
         lessons_completed = progress_response.count or 0
         
-        # Get currently unlocked achievement IDs
         unlocked_response = supabase.table("user_achievements") \
             .select("achievement_id") \
             .eq("user_id", user_id) \
@@ -124,7 +117,6 @@ async def check_and_unlock_achievements(
         
         unlocked_ids = {ua["achievement_id"] for ua in unlocked_response.data}
         
-        # Get all achievements
         all_achievements = supabase.table("achievements") \
             .select("*") \
             .execute()
@@ -133,7 +125,7 @@ async def check_and_unlock_achievements(
         
         for ach in all_achievements.data:
             if ach["id"] in unlocked_ids:
-                continue  # Already unlocked
+                continue  
             
             requirement_type = ach["requirement_type"]
             requirement_value = ach["requirement_value"]
@@ -146,10 +138,8 @@ async def check_and_unlock_achievements(
                 should_unlock = True
             elif requirement_type == "lessons_completed" and lessons_completed >= requirement_value:
                 should_unlock = True
-            # course_completed would need additional logic
             
             if should_unlock:
-                # Unlock the achievement
                 supabase.table("user_achievements").insert({
                     "user_id": user_id,
                     "achievement_id": ach["id"]

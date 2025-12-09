@@ -11,18 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 async def get_access_token(authorization: Optional[str] = Header(None)) -> str:
-    """
-    Extract and validate Bearer token from Authorization header.
-    
-    Args:
-        authorization: Authorization header value
-        
-    Returns:
-        Extracted JWT token
-        
-    Raises:
-        HTTPException: If authorization header is missing or invalid
-    """
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -49,18 +37,6 @@ async def get_access_token(authorization: Optional[str] = Header(None)) -> str:
 
 
 async def get_current_user(token: str = Depends(get_access_token)):
-    """
-    Get current authenticated user from JWT token.
-    
-    Args:
-        token: JWT access token
-        
-    Returns:
-        Authenticated user object
-        
-    Raises:
-        HTTPException: If token is invalid or user not found
-    """
     try:
         supabase = get_supabase()
         user_response = supabase.auth.get_user(token)
@@ -87,22 +63,9 @@ async def get_current_user(token: str = Depends(get_access_token)):
 
 
 async def require_admin(token: str = Depends(get_access_token)):
-    """
-    Require admin or super_admin role for access.
-    
-    Args:
-        token: JWT access token
-        
-    Returns:
-        Authenticated admin user object
-        
-    Raises:
-        HTTPException: If user is not authenticated or lacks admin privileges
-    """
     supabase = get_supabase()
     
     try:
-        # Authenticate user
         user_response = supabase.auth.get_user(token)
         if not user_response or not user_response.user:
             raise HTTPException(
@@ -113,7 +76,6 @@ async def require_admin(token: str = Depends(get_access_token)):
         
         user_id = user_response.user.id
         
-        # Check admin role
         profile_response = supabase.table("profiles")\
             .select("role")\
             .eq("id", user_id)\
@@ -128,7 +90,6 @@ async def require_admin(token: str = Depends(get_access_token)):
         
         role = profile_response.data[0].get("role", "")
         
-        # Import here to avoid circular dependency
         from constants import ADMIN_ROLES
         
         if role not in ADMIN_ROLES:

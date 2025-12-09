@@ -1,6 +1,3 @@
-"""
-User authentication and profile models with validation.
-"""
 from pydantic import BaseModel, EmailStr, field_validator, Field
 from typing import Optional
 from datetime import datetime
@@ -8,13 +5,11 @@ import re
 
 
 class UserBase(BaseModel):
-    """Base user model with common fields"""
     email: EmailStr = Field(..., description="User email address")
     username: str = Field(..., min_length=3, max_length=20, description="Username")
 
 
 class UserCreate(UserBase):
-    """User creation model with password validation"""
     password: str = Field(..., min_length=8, description="User password")
     
     @field_validator('password')
