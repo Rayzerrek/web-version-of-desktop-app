@@ -161,6 +161,7 @@ class CourseBase(BaseModel):
     iconUrl: Optional[str] = None
     estimatedHours: Optional[int] = 10
     isPublished: bool = False
+    orderIndex: Optional[int] = 0
 
 
 class CourseCreate(CourseBase):
@@ -178,6 +179,7 @@ class CourseUpdate(BaseModel):
     isPublished: Optional[bool] = None
     estimatedHours: Optional[int] = None
     iconUrl: Optional[str] = None
+    orderIndex: Optional[int] = None
 
 
 class CourseResponse(BaseModel):
@@ -192,5 +194,6 @@ class CourseResponse(BaseModel):
     iconUrl: Optional[str] = Field(default=None, validation_alias='icon_url')
     estimatedHours: Optional[int] = Field(default=10, validation_alias='estimated_hours')
     isPublished: bool = Field(default=False, validation_alias='is_published')
+    orderIndex: Optional[int] = Field(default=0, validation_alias='order_index')
     modules: List[ModuleResponse] = []
     created_at: datetime

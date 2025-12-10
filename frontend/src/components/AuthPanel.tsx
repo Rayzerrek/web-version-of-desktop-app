@@ -155,7 +155,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           onClose={() => setToast(null)}
         />
       )}
-      <div className="min-h-screen bg-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-800  flex items-center justify-center p-4">
         <div
           className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md p-8"
           style={{
