@@ -56,7 +56,6 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
     return (
         <div className="min-h-screen blue-50 dark:bg-gray-900 flex items-center justify-center p-4">
             <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-                {/* Progress bar */}
                 <div className="mb-8">
                     <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
                         <span>Step {step} of 4</span>
@@ -75,7 +74,6 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
                     </div>
                 </div>
 
-                {/* Step 1: Interest */}
                 {step === 1 && (
                     <div className="space-y-6">
                         <div>
@@ -115,7 +113,6 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
                     </div>
                 )}
 
-                {/* Step 2: Interstitial */}
                 {step === 2 && (
                     <div className="space-y-6">
                         <div className="text-center py-8">
@@ -131,7 +128,6 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
                     </div>
                 )}
 
-                {/* Step 3: Experience */}
                 {step === 3 && (
                     <div className="space-y-6">
                         <div>
