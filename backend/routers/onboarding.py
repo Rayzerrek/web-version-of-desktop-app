@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from utils.dependencies import get_current_user
-from supabase_client import supabase
+from supabase_client import get_admin_supabase
 
+supabase = get_admin_supabase()
 router = APIRouter(prefix="/users", tags=["onboarding"])
 
 
