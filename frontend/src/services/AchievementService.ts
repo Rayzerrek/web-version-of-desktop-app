@@ -1,50 +1,54 @@
-import { apiFetch, authHeaders } from './ApiClient'
+import { apiFetch, authHeaders } from "./ApiClient";
 
-export type RequirementType = 'streak' | 'xp' | 'lessons_completed' | 'course_completed'
+export type RequirementType =
+  | "streak"
+  | "xp"
+  | "lessons_completed"
+  | "course_completed";
 
 export interface Achievement {
-    id: string
-    title: string
-    description?: string
-    icon_url?: string
-    requirement_type: RequirementType
-    requirement_value: number
-    badge_color: string
+  id: string;
+  title: string;
+  description?: string;
+  icon_url?: string;
+  requirement_type: RequirementType;
+  requirement_value: number;
+  badge_color: string;
 }
 
 export class AchievementService {
-    async getAvailableAchievements(): Promise<Achievement[]> {
-        const token = localStorage.getItem('access_token')
-        if (!token) throw new Error('No access token')
+  async getAvailableAchievements(): Promise<Achievement[]> {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("No access token");
 
-        return await apiFetch<Achievement[]>('/achievements', {
-            headers: authHeaders(token),
-        })
-    }
+    return await apiFetch<Achievement[]>("/achievements", {
+      headers: authHeaders(token),
+    });
+  }
 
-    async getUserAchievements(userId: string): Promise<Achievement[]> {
-        const token = localStorage.getItem('access_token')
-        if (!token) throw new Error('No access token')
+  async getUserAchievements(userId: string): Promise<Achievement[]> {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("No access token");
 
-        return await apiFetch<Achievement[]>(`/achievements/users/${userId}`, {
-            headers: authHeaders(token),
-        })
-    }
+    return await apiFetch<Achievement[]>(`/achievements/users/${userId}`, {
+      headers: authHeaders(token),
+    });
+  }
 
-    async checkAndUnlockAchievements(userId: string): Promise<Achievement[]> {
-        const token = localStorage.getItem('access_token')
-        if (!token) throw new Error('No access token')
+  async checkAndUnlockAchievements(userId: string): Promise<Achievement[]> {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("No access token");
 
-        const response = await apiFetch<{ newly_unlocked: Achievement[], total_unlocked: number }>(
-            `/achievements/users/${userId}/check`,
-            {
-                method: 'POST',
-                headers: authHeaders(token),
-            }
-        )
+    const response = await apiFetch<{
+      newly_unlocked: Achievement[];
+      total_unlocked: number;
+    }>(`/achievements/users/${userId}/check`, {
+      method: "POST",
+      headers: authHeaders(token),
+    });
 
-        return response.newly_unlocked || []
-    }
+    return response.newly_unlocked || [];
+  }
 }
 
-export const achievementService = new AchievementService()
+export const achievementService = new AchievementService();

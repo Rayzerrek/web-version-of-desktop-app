@@ -1,110 +1,110 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
-import { useAuth } from './useAuth'
-import '@testing-library/jest-dom/vitest'
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
+import { useAuth } from "./useAuth";
+import "@testing-library/jest-dom/vitest";
 
-vi.mock('../services/ApiClient', () => ({
+vi.mock("../services/ApiClient", () => ({
   apiFetch: vi.fn(),
-  authHeaders: vi.fn(() => ({ 'Content-Type': 'application/json' }))
-}))
+  authHeaders: vi.fn(() => ({ "Content-Type": "application/json" })),
+}));
 
-vi.mock('../utils/auth', () => ({
+vi.mock("../utils/auth", () => ({
   isAuthenticated: vi.fn(),
   clearAuthTokens: vi.fn(),
-}))
+}));
 
-import { apiFetch } from '../services/ApiClient'
-import { isAuthenticated, clearAuthTokens } from '../utils/auth'
+import { apiFetch } from "../services/ApiClient";
+import { isAuthenticated, clearAuthTokens } from "../utils/auth";
 
-describe('useAuth', () => {
+describe("useAuth", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    localStorage.clear()
-    vi.mocked(isAuthenticated).mockReturnValue(false)
-  })
+    vi.clearAllMocks();
+    localStorage.clear();
+    vi.mocked(isAuthenticated).mockReturnValue(false);
+  });
 
-  it('initializes with authentication state from utils', () => {
-    vi.mocked(isAuthenticated).mockReturnValue(true)
+  it("initializes with authentication state from utils", () => {
+    vi.mocked(isAuthenticated).mockReturnValue(true);
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    expect(result.current.isAuthenticated).toBe(true)
-  })
+    expect(result.current.isAuthenticated).toBe(true);
+  });
 
-  it('sets isAdmin to true when user is admin', async () => {
-  localStorage.setItem('access_token', 'test_token')
-  vi.mocked(isAuthenticated).mockReturnValue(true)
-  vi.mocked(apiFetch).mockResolvedValue({ isAdmin: true })
+  it("sets isAdmin to true when user is admin", async () => {
+    localStorage.setItem("access_token", "test_token");
+    vi.mocked(isAuthenticated).mockReturnValue(true);
+    vi.mocked(apiFetch).mockResolvedValue({ isAdmin: true });
 
-    const { result } = renderHook(() => useAuth())
-
-    await waitFor(() => {
-      expect(result.current.isAdmin).toBe(true)
-    })
-  })
-
-  it('sets isAdmin to false when user is not admin', async () => {
-  localStorage.setItem('access_token', 'test_token')
-  vi.mocked(isAuthenticated).mockReturnValue(true)
-  vi.mocked(apiFetch).mockResolvedValue({ isAdmin: false })
-
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
     await waitFor(() => {
-      expect(result.current.isAdmin).toBe(false)
-    })
-  })
+      expect(result.current.isAdmin).toBe(true);
+    });
+  });
 
-  it('sets isAdmin to false when no token exists', async () => {
-    const { result } = renderHook(() => useAuth())
+  it("sets isAdmin to false when user is not admin", async () => {
+    localStorage.setItem("access_token", "test_token");
+    vi.mocked(isAuthenticated).mockReturnValue(true);
+    vi.mocked(apiFetch).mockResolvedValue({ isAdmin: false });
 
-    await result.current.refreshAdmin()
-
-    expect(result.current.isAdmin).toBe(false)
-  })
-
-  it('login sets authenticated to true and refreshes admin status', async () => {
-    localStorage.setItem('access_token', 'test_token')
-  vi.mocked(isAuthenticated).mockReturnValue(false)
-  vi.mocked(apiFetch).mockResolvedValue({ isAdmin: true })
-
-    const { result } = renderHook(() => useAuth())
-
-    result.current.login()
+    const { result } = renderHook(() => useAuth());
 
     await waitFor(() => {
-      expect(result.current.isAuthenticated).toBe(true)
-    })
+      expect(result.current.isAdmin).toBe(false);
+    });
+  });
+
+  it("sets isAdmin to false when no token exists", async () => {
+    const { result } = renderHook(() => useAuth());
+
+    await result.current.refreshAdmin();
+
+    expect(result.current.isAdmin).toBe(false);
+  });
+
+  it("login sets authenticated to true and refreshes admin status", async () => {
+    localStorage.setItem("access_token", "test_token");
+    vi.mocked(isAuthenticated).mockReturnValue(false);
+    vi.mocked(apiFetch).mockResolvedValue({ isAdmin: true });
+
+    const { result } = renderHook(() => useAuth());
+
+    result.current.login();
 
     await waitFor(() => {
-      expect(apiFetch).toHaveBeenCalled()
-    })
-  })
+      expect(result.current.isAuthenticated).toBe(true);
+    });
 
-  it('logout clears tokens and resets state', () => {
+    await waitFor(() => {
+      expect(apiFetch).toHaveBeenCalled();
+    });
+  });
+
+  it("logout clears tokens and resets state", () => {
     // reload window.location properly
-    delete (window as any).location
-    ;(window as any).location = { reload: vi.fn() }
+    delete (window as any).location;
+    (window as any).location = { reload: vi.fn() };
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    result.current.logout()
+    result.current.logout();
 
-    expect(clearAuthTokens).toHaveBeenCalled()
-    expect(result.current.isAuthenticated).toBe(false)
-    expect(result.current.isAdmin).toBe(false)
-    expect(window.location.reload).toHaveBeenCalled()
-  })
+    expect(clearAuthTokens).toHaveBeenCalled();
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.isAdmin).toBe(false);
+    expect(window.location.reload).toHaveBeenCalled();
+  });
 
-  it('handles invoke error gracefully', async () => {
-    localStorage.setItem('access_token', 'test_token')
-    vi.mocked(isAuthenticated).mockReturnValue(true)
-  vi.mocked(apiFetch).mockRejectedValue(new Error('API Error'))
+  it("handles invoke error gracefully", async () => {
+    localStorage.setItem("access_token", "test_token");
+    vi.mocked(isAuthenticated).mockReturnValue(true);
+    vi.mocked(apiFetch).mockRejectedValue(new Error("API Error"));
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
     await waitFor(() => {
-      expect(result.current.isAdmin).toBe(false)
-    })
-  })
-})
+      expect(result.current.isAdmin).toBe(false);
+    });
+  });
+});

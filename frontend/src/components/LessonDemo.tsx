@@ -1,158 +1,166 @@
-import { useState, useEffect } from 'react'
-import { apiFetch } from '../services/ApiClient'
-import CodeEditor from './CodeEditor'
-import LessonSuccessModal from './LessonSuccessModal'
-import QuizLesson from './QuizLesson'
-import { lessonService } from '../services/LessonService'
-import { progressService } from '../services/ProgressService'
-import type { Lesson, Course } from '../types/lesson'
-import { getNextLessonId, findCourseByLessonId } from '../utils/courseUtils'
+import { useState, useEffect } from "react";
+import { apiFetch } from "../services/ApiClient";
+import CodeEditor from "./CodeEditor";
+import LessonSuccessModal from "./LessonSuccessModal";
+import QuizLesson from "./QuizLesson";
+import { lessonService } from "../services/LessonService";
+import { progressService } from "../services/ProgressService";
+import type { Lesson, Course } from "../types/lesson";
+import { getNextLessonId, findCourseByLessonId } from "../utils/courseUtils";
 
 interface CodeValidationResponse {
-  success: boolean
-  output: string
-  error?: string
-  is_correct: boolean
+  success: boolean;
+  output: string;
+  error?: string;
+  is_correct: boolean;
 }
 
 interface LessonDemoProps {
-  lessonId?: string
-  onNextLesson?: (nextLessonId: string) => void
-  onBackToCourse?: () => void
+  lessonId?: string;
+  onNextLesson?: (nextLessonId: string) => void;
+  onBackToCourse?: () => void;
 }
 
 export default function LessonDemo({
-  lessonId = 'py-001',
+  lessonId = "py-001",
   onNextLesson,
 }: LessonDemoProps) {
-  const [output, setOutput] = useState<string>('')
-  const [currentCode, setCurrentCode] = useState<string>('')
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
-  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
-  const [lesson, setLesson] = useState<Lesson | null>(null)
-  const [course, setCourse] = useState<Course | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [htmlPreview, setHtmlPreview] = useState<string>('')
+  const [output, setOutput] = useState<string>("");
+  const [currentCode, setCurrentCode] = useState<string>("");
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [htmlPreview, setHtmlPreview] = useState<string>("");
 
   useEffect(() => {
-    loadLesson()
-  }, [lessonId])
+    loadLesson();
+  }, [lessonId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey && e.key === 'Enter') {
-        e.preventDefault()
-        handleRunCode(currentCode)
+      if (e.altKey && e.key === "Enter") {
+        e.preventDefault();
+        handleRunCode(currentCode);
       }
-    }
-    window.addEventListener('keydown', handleKeyDown)
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [currentCode])
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentCode]);
 
   const loadLesson = async () => {
     try {
-      const lessonData = await lessonService.getLessonById(lessonId)
-      setLesson(lessonData)
+      const lessonData = await lessonService.getLessonById(lessonId);
+      setLesson(lessonData);
 
       if (lessonData) {
-        const courses = await lessonService.getCourses()
-        const foundCourse = findCourseByLessonId(courses, lessonId)
-        setCourse(foundCourse || null)
+        const courses = await lessonService.getCourses();
+        const foundCourse = findCourseByLessonId(courses, lessonId);
+        setCourse(foundCourse || null);
       }
     } catch (error) {
-      console.error('Error loading lesson:', error)
+      console.error("Error loading lesson:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-slate-600 dark:text-slate-300">Ładowanie lekcji...</p>
+          <p className="text-xl text-slate-600 dark:text-slate-300">
+            Ładowanie lekcji...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!lesson) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-slate-600 dark:text-slate-300">Lekcja nie znaleziona</p>
+          <p className="text-xl text-slate-600 dark:text-slate-300">
+            Lekcja nie znaleziona
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   const starterCode =
-    lesson.content.type === 'exercise' ? lesson.content.starterCode : ''
+    lesson.content.type === "exercise" ? lesson.content.starterCode : "";
   const expectedOutput =
-    lesson.content.type === 'exercise' && lesson.content.testCases?.[0]
+    lesson.content.type === "exercise" && lesson.content.testCases?.[0]
       ? lesson.content.testCases[0].expectedOutput
-      : ''
+      : "";
 
   const handleRunCode = async (code: string) => {
     try {
-      if (lesson.language === 'html') {
-        setHtmlPreview(code)
+      if (lesson.language === "html") {
+        setHtmlPreview(code);
       }
 
       const result = await apiFetch<CodeValidationResponse>(`/validate_code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language: lesson.language, expectedOutput }),
-      })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          language: lesson.language,
+          expectedOutput,
+        }),
+      });
 
       if (result.error) {
-        setOutput(result.error)
-        setIsCorrect(false)
+        setOutput(result.error);
+        setIsCorrect(false);
       } else {
-        setOutput(result.output)
-        setIsCorrect(result.is_correct)
+        setOutput(result.output);
+        setIsCorrect(result.is_correct);
 
         if (result.is_correct) {
           // Mark lesson as completed
-          const userId = localStorage.getItem('user_id')
+          const userId = localStorage.getItem("user_id");
           if (userId) {
             try {
-              await progressService.markLessonCompleted(userId, lessonId)
-              console.log('Lesson marked as completed')
+              await progressService.markLessonCompleted(userId, lessonId);
+              console.log("Lesson marked as completed");
             } catch (error) {
-              console.error('Error saving progress:', error)
+              console.error("Error saving progress:", error);
             }
           }
 
           setTimeout(() => {
-            setShowSuccessModal(true)
-          }, 500)
+            setShowSuccessModal(true);
+          }, 500);
         }
       }
     } catch (error) {
-      setOutput(`Error: ${error}`)
-      setIsCorrect(false)
+      setOutput(`Error: ${error}`);
+      setIsCorrect(false);
     }
-  }
+  };
 
   const handleNextLesson = async () => {
-    setShowSuccessModal(false)
-    console.log('Moving to next lesson from:', lessonId)
+    setShowSuccessModal(false);
+    console.log("Moving to next lesson from:", lessonId);
 
-    const courses = await lessonService.getCourses()
-    const nextId = getNextLessonId(courses, lessonId)
+    const courses = await lessonService.getCourses();
+    const nextId = getNextLessonId(courses, lessonId);
 
     if (nextId) {
-      console.log('Next lesson:', nextId)
-      onNextLesson?.(nextId)
+      console.log("Next lesson:", nextId);
+      onNextLesson?.(nextId);
     } else {
-      console.log('This is the last lesson!')
+      console.log("This is the last lesson!");
     }
-  }
+  };
 
-  if (lesson.content.type === 'quiz') {
+  if (lesson.content.type === "quiz") {
     return (
       <QuizLesson
         lesson={lesson}
@@ -160,7 +168,7 @@ export default function LessonDemo({
         onNextLesson={handleNextLesson}
         lessonId={lessonId}
       />
-    )
+    );
   }
 
   return (
@@ -176,8 +184,10 @@ export default function LessonDemo({
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-3">
-              <span className="font-medium">{course?.title || 'Kurs'}</span>
-              <span className="text-slate-400 dark:text-slate-500">{String.fromCharCode(8250)}</span>
+              <span className="font-medium">{course?.title || "Kurs"}</span>
+              <span className="text-slate-400 dark:text-slate-500">
+                {String.fromCharCode(8250)}
+              </span>
               <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-semibold">
                 Lekcja {lesson.orderIndex}
               </span>
@@ -188,9 +198,7 @@ export default function LessonDemo({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div
-              className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 space-y-6"
-            >
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
                   Instrukcja
@@ -202,7 +210,7 @@ export default function LessonDemo({
                 </div>
               </div>
 
-              {lesson.content.type === 'exercise' &&
+              {lesson.content.type === "exercise" &&
                 lesson.content.exampleCode && (
                   <div className="bg-slate-900 dark:bg-slate-950 rounded-2xl p-5 border border-slate-700">
                     {lesson.content.exampleDescription && (
@@ -228,7 +236,7 @@ export default function LessonDemo({
                   </div>
                 )}
 
-              {lesson.content.type === 'exercise' && (
+              {lesson.content.type === "exercise" && (
                 <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6 border border-purple-100 dark:border-purple-800">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
                     Twoje zadanie
@@ -238,18 +246,16 @@ export default function LessonDemo({
                   </p>
                 </div>
               )}
-              {lesson.content.type === 'exercise' && lesson.content.hint && (
+              {lesson.content.type === "exercise" && lesson.content.hint && (
                 <div className="bg-amber-50 dark:bg-amber-900/30 rounded-2xl p-5 border border-amber-100 dark:border-amber-800">
                   <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-                    <strong className="font-semibold">💡 Wskazówka:</strong>{' '}
+                    <strong className="font-semibold">💡 Wskazówka:</strong>{" "}
                     {lesson.content.hint}
                   </p>
                 </div>
               )}
 
-              <div
-                className="flex items-center justify-between bg-amber-400 rounded-2xl p-5 shadow-lg"
-              >
+              <div className="flex items-center justify-between bg-amber-400 rounded-2xl p-5 shadow-lg">
                 <span className="text-white font-semibold">
                   Nagroda za ukończenie
                 </span>
@@ -260,9 +266,7 @@ export default function LessonDemo({
             </div>
 
             <div className="space-y-6">
-              <div
-                className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden"
-              >
+              <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden">
                 <CodeEditor
                   initialCode={starterCode}
                   language={lesson.language}
@@ -271,7 +275,7 @@ export default function LessonDemo({
                   height="300px"
                   theme="vs-dark"
                 />
-                {lesson.language === 'html' && (
+                {lesson.language === "html" && (
                   <div className="border-t border-slate-200 dark:border-slate-700">
                     <div className="bg-slate-50 dark:bg-slate-900 px-6 py-3 flex items-center gap-2">
                       <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">
@@ -297,9 +301,7 @@ export default function LessonDemo({
                 )}
               </div>
 
-              <div
-                className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden"
-              >
+              <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden">
                 <div className="bg-slate-50 dark:bg-slate-900 px-6 py-3 flex items-center gap-2">
                   <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">
                     Konsola
@@ -324,9 +326,7 @@ export default function LessonDemo({
               </div>
 
               {isCorrect === false && (
-                <div
-                  className="rounded-3xl p-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 shadow-lg"
-                >
+                <div className="rounded-3xl p-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 shadow-lg">
                   <div className="mb-3">
                     <h3 className="text-2xl font-bold text-red-600 dark:text-red-400">
                       Nie do końca...
@@ -338,7 +338,7 @@ export default function LessonDemo({
                   <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-4 text-sm">
                     <strong className="text-red-700 dark:text-red-300 font-semibold">
                       Oczekiwany wynik:
-                    </strong>{' '}
+                    </strong>{" "}
                     <code className="text-red-600 dark:text-red-400 font-mono bg-red-100 dark:bg-red-900/50 px-2 py-1 rounded">
                       {expectedOutput}
                     </code>
@@ -350,5 +350,5 @@ export default function LessonDemo({
         </div>
       </div>
     </>
-  )
+  );
 }

@@ -1,50 +1,50 @@
-import Editor from '@monaco-editor/react'
-import { useState } from 'react'
-import { getFileNameForLanguage } from '../utils/courseUtils'
-import ButtonComponent from './common/ButtonComponent'
+import Editor from "@monaco-editor/react";
+import { useState } from "react";
+import { getFileNameForLanguage } from "../utils/courseUtils";
+import ButtonComponent from "./common/ButtonComponent";
 
 interface CodeEditorProps {
-  initialCode?: string
-  language?: string
-  onChange?: (value: string) => void
-  onRun?: (code: string) => void
-  readOnly?: boolean
-  height?: string
-  theme?: 'vs-dark' | 'light'
+  initialCode?: string;
+  language?: string;
+  onChange?: (value: string) => void;
+  onRun?: (code: string) => void;
+  readOnly?: boolean;
+  height?: string;
+  theme?: "vs-dark" | "light";
 }
 
 export default function CodeEditor({
-  initialCode = '',
-  language = 'python',
+  initialCode = "",
+  language = "python",
   onChange,
   onRun,
   readOnly = false,
-  height = '400px',
-  theme = 'vs-dark',
+  height = "400px",
+  theme = "vs-dark",
 }: CodeEditorProps) {
-  const [code, setCode] = useState(initialCode)
-  const [isRunning, setIsRunning] = useState(false)
+  const [code, setCode] = useState(initialCode);
+  const [isRunning, setIsRunning] = useState(false);
 
   const handleEditorChange = (value: string | undefined) => {
-    const newCode = value || ''
-    setCode(newCode)
-    onChange?.(newCode)
-  }
+    const newCode = value || "";
+    setCode(newCode);
+    onChange?.(newCode);
+  };
 
   const handleRun = async () => {
-    if (!onRun) return
-    setIsRunning(true)
+    if (!onRun) return;
+    setIsRunning(true);
     try {
-      onRun(code)
+      onRun(code);
     } finally {
-      setIsRunning(false)
+      setIsRunning(false);
     }
-  }
+  };
 
   const handleReset = () => {
-    setCode(initialCode)
-    onChange?.(initialCode)
-  }
+    setCode(initialCode);
+    onChange?.(initialCode);
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -102,15 +102,15 @@ export default function CodeEditor({
             fontSize: 14,
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
-            lineNumbers: 'on',
+            lineNumbers: "on",
             roundedSelection: false,
             readOnly: readOnly,
             automaticLayout: true,
-            tabCompletion: 'on',
-            autoClosingBrackets: 'always',
-            matchBrackets: 'always',
+            tabCompletion: "on",
+            autoClosingBrackets: "always",
+            matchBrackets: "always",
             tabSize: 4,
-            wordWrap: 'on',
+            wordWrap: "on",
             folding: true,
             lineDecorationsWidth: 10,
             lineNumbersMinChars: 3,
@@ -138,5 +138,5 @@ export default function CodeEditor({
         />
       </div>
     </div>
-  )
+  );
 }

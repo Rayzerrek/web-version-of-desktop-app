@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
-import ButtonComponent from './common/ButtonComponent'
+import { useEffect, useState } from "react";
+import ButtonComponent from "./common/ButtonComponent";
 
 interface LessonSuccessModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onNextLesson: () => void
-  xpReward: number
-  lessonTitle: string
+  isOpen: boolean;
+  onClose: () => void;
+  onNextLesson: () => void;
+  xpReward: number;
+  lessonTitle: string;
 }
 
 export default function LessonSuccessModal({
@@ -16,15 +16,15 @@ export default function LessonSuccessModal({
   xpReward,
   lessonTitle,
 }: LessonSuccessModalProps) {
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setIsAnimating(true)
+      setIsAnimating(true);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -33,12 +33,12 @@ export default function LessonSuccessModal({
     >
       <div
         className={`bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all duration-500 ${
-          isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+          isAnimating ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
         onClick={(e) => e.stopPropagation()}
         style={{
           boxShadow:
-            '0 25px 80px rgba(0, 0, 0, 0.25), 0 10px 30px rgba(0, 0, 0, 0.15)',
+            "0 25px 80px rgba(0, 0, 0, 0.25), 0 10px 30px rgba(0, 0, 0, 0.15)",
         }}
       >
         <div className="relative bg-green-500 p-10 text-center">
@@ -127,5 +127,5 @@ export default function LessonSuccessModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

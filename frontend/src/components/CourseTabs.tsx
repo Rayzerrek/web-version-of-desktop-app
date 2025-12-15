@@ -1,87 +1,90 @@
-import { useState, useEffect } from 'react'
-import type { Course } from '../types/lesson'
-import { lessonService } from '../services/LessonService'
-import { progressService, type UserProgress } from '../services/ProgressService'
-import CourseGrid from './CourseGrid'
-import SearchBar from './Searchbar'
+import { useState, useEffect } from "react";
+import type { Course } from "../types/lesson";
+import { lessonService } from "../services/LessonService";
+import {
+  progressService,
+  type UserProgress,
+} from "../services/ProgressService";
+import CourseGrid from "./CourseGrid";
+import SearchBar from "./Searchbar";
 
 interface CourseTabsProps {
-  onCourseSelect: (courseId: string) => void
+  onCourseSelect: (courseId: string) => void;
 }
 
 export default function CourseTabs({ onCourseSelect }: CourseTabsProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'all'>('overview')
-  const [courses, setCourses] = useState<Course[]>([])
-  const [loading, setLoading] = useState(true)
-  const [userProgress, setUserProgress] = useState<UserProgress[]>([])
+  const [activeTab, setActiveTab] = useState<"overview" | "all">("overview");
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
       const [coursesData, progressData] = await Promise.all([
         lessonService.getCourses(),
         loadProgress(),
-      ])
-      setCourses(coursesData)
-      setUserProgress(progressData)
+      ]);
+      setCourses(coursesData);
+      setUserProgress(progressData);
     } catch (error) {
-      console.error('Error loading data:', error)
+      console.error("Error loading data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadProgress = async (): Promise<UserProgress[]> => {
     try {
-      const userId = localStorage.getItem('user_id')
+      const userId = localStorage.getItem("user_id");
       if (userId) {
-        return await progressService.getUserProgress(userId)
+        return await progressService.getUserProgress(userId);
       }
     } catch (error) {
-      console.error('Error loading progress:', error)
+      console.error("Error loading progress:", error);
     }
-    return []
-  }
+    return [];
+  };
 
   const getCourseProgress = (course: Course): number => {
     const lessonIds = course.modules.flatMap((module) =>
-      module.lessons.map((lesson) => lesson.id)
-    )
-    return progressService.calculateCourseProgress(userProgress, lessonIds)
-  }
+      module.lessons.map((lesson) => lesson.id),
+    );
+    return progressService.calculateCourseProgress(userProgress, lessonIds);
+  };
 
   const getStartedCourses = (): Course[] => {
     return courses.filter((course) => {
-      const progress = getCourseProgress(course)
-      return progress > 0 && progress < 100
-    })
-  }
+      const progress = getCourseProgress(course);
+      return progress > 0 && progress < 100;
+    });
+  };
 
   const getRecommendedCourses = (): Course[] => {
-    const started = getStartedCourses()
-    const startedIds = new Set(started.map((c) => c.id))
+    const started = getStartedCourses();
+    const startedIds = new Set(started.map((c) => c.id));
 
     return courses
       .filter(
         (course) =>
           !startedIds.has(course.id) &&
           course.isPublished &&
-          getCourseProgress(course) < 100
+          getCourseProgress(course) < 100,
       )
-      .slice(0, 3)
-  }
+      .slice(0, 3);
+  };
 
   const handleSearchResultSelect = (result: {
-    type: 'course' | 'lesson'
-    id: string
+    type: "course" | "lesson";
+    id: string;
   }) => {
-    if (result.type === 'course') {
-      onCourseSelect(result.id)
+    if (result.type === "course") {
+      onCourseSelect(result.id);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -90,11 +93,11 @@ export default function CourseTabs({ onCourseSelect }: CourseTabsProps) {
           <p className="text-xl text-slate-600">Ładowanie kursów...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const startedCourses = getStartedCourses()
-  const recommendedCourses = getRecommendedCourses()
+  const startedCourses = getStartedCourses();
+  const recommendedCourses = getRecommendedCourses();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50">
@@ -114,28 +117,28 @@ export default function CourseTabs({ onCourseSelect }: CourseTabsProps) {
 
         <div className="flex gap-4 mb-8 bg-white rounded-2xl p-2 shadow-lg w-full">
           <button
-            onClick={() => setActiveTab('overview')}
+            onClick={() => setActiveTab("overview")}
             className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 text-lg ${
-              activeTab === 'overview'
-                ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+              activeTab === "overview"
+                ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                : "text-slate-600 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
             Przegląd
           </button>
           <button
-            onClick={() => setActiveTab('all')}
+            onClick={() => setActiveTab("all")}
             className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 text-lg ${
-              activeTab === 'all'
-                ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+              activeTab === "all"
+                ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                : "text-slate-600 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
             Wszystkie kursy
           </button>
         </div>
 
-        {activeTab === 'overview' ? (
+        {activeTab === "overview" ? (
           <div className="space-y-12">
             {startedCourses.length > 0 && (
               <section>
@@ -188,5 +191,5 @@ export default function CourseTabs({ onCourseSelect }: CourseTabsProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

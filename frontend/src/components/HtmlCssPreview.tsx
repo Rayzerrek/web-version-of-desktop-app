@@ -1,10 +1,13 @@
 interface HtmlCssPreviewProps {
-    html: string;
-    css?: string;
+  html: string;
+  css?: string;
 }
 
-export default function HtmlCssPreview({ html = '', css = '' }: HtmlCssPreviewProps) {
-    const document = `
+export default function HtmlCssPreview({
+  html = "",
+  css = "",
+}: HtmlCssPreviewProps) {
+  const document = `
         <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -19,13 +22,13 @@ export default function HtmlCssPreview({ html = '', css = '' }: HtmlCssPreviewPr
         ${html}        
     </body>
     </html>
-    `
-    return (
-        <iframe
-            title="HTML CSS Preview"
-            sandbox="allow-scripts allow-same-origin"
-            style={{ width: '100%', height: '100%', border: 'none' }}
-            srcDoc={document}
-        />
-    )
+    `;
+  return (
+    <iframe
+      title="HTML CSS Preview"
+      sandbox="allow-scripts allow-same-origin"
+      style={{ width: "100%", height: "100%", border: "none" }}
+      srcDoc={document}
+    />
+  );
 }

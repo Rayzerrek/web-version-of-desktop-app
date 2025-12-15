@@ -1,23 +1,23 @@
-import type { Course } from '../types/lesson'
+import type { Course } from "../types/lesson";
 
 interface CourseGridProps {
-  courses: Course[]
-  onCourseSelect: (courseId: string) => void
-  getCourseProgress?: (course: Course) => number
+  courses: Course[];
+  onCourseSelect: (courseId: string) => void;
+  getCourseProgress?: (course: Course) => number;
 }
 
-const difficultyLabel = (d: Course['difficulty']) => {
+const difficultyLabel = (d: Course["difficulty"]) => {
   switch (d) {
-    case 'beginner':
-      return 'Łatwy'
-    case 'intermediate':
-      return 'Średni'
-    case 'advanced':
-      return 'Zaawansowany'
+    case "beginner":
+      return "Łatwy";
+    case "intermediate":
+      return "Średni";
+    case "advanced":
+      return "Zaawansowany";
     default:
-      return d
+      return d;
   }
-}
+};
 
 export default function CourseGrid({
   courses,
@@ -29,7 +29,7 @@ export default function CourseGrid({
       <div className="text-center text-slate-600">
         Brak kursów do wyświetlenia.
       </div>
-    )
+    );
   }
 
   return (
@@ -37,7 +37,7 @@ export default function CourseGrid({
       {courses.map((course) => {
         const progress = getCourseProgress
           ? Math.round(getCourseProgress(course))
-          : 0
+          : 0;
 
         return (
           <div
@@ -47,14 +47,14 @@ export default function CourseGrid({
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onCourseSelect(course.id)
+              if (e.key === "Enter" || e.key === " ") onCourseSelect(course.id);
             }}
           >
             <div className="p-6">
               <div className="flex items-start gap-4">
                 <div
                   className="shrink-0 w-14 h-14 rounded-lg flex items-center justify-center text-xl font-bold text-white"
-                  style={{ background: course.color || '#4f46e5' }}
+                  style={{ background: course.color || "#4f46e5" }}
                 >
                   {course.iconUrl ? (
                     <img
@@ -79,7 +79,18 @@ export default function CourseGrid({
 
               <div className="mt-4 flex items-center justify-between text-sm text-slate-500">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300" style={course.difficulty === 'beginner' ? { backgroundColor: '#d1fae5', color: '#065f46' } : course.difficulty === 'intermediate' ? { backgroundColor: '#fef3c7', color: '#92400e' } : course.difficulty === 'advanced' ? { backgroundColor: '#fee2e2', color: '#991b1b' } : {}}>
+                  <span
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+                    style={
+                      course.difficulty === "beginner"
+                        ? { backgroundColor: "#d1fae5", color: "#065f46" }
+                        : course.difficulty === "intermediate"
+                          ? { backgroundColor: "#fef3c7", color: "#92400e" }
+                          : course.difficulty === "advanced"
+                            ? { backgroundColor: "#fee2e2", color: "#991b1b" }
+                            : {}
+                    }
+                  >
                     {difficultyLabel(course.difficulty)}
                   </span>
                   {course.estimatedHours && (
@@ -109,8 +120,8 @@ export default function CourseGrid({
               </div>
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -1,26 +1,26 @@
-import { useState, type JSX } from 'react'
-import { Editor } from '@monaco-editor/react'
-import { apiFetch } from '../services/ApiClient'
-import ButtonComponent from './common/ButtonComponent'
+import { useState, type JSX } from "react";
+import { Editor } from "@monaco-editor/react";
+import { apiFetch } from "../services/ApiClient";
+import ButtonComponent from "./common/ButtonComponent";
 import {
   SiPython,
   SiJavascript,
   SiHtml5,
   SiCss3,
   SiTypescript,
-} from 'react-icons/si'
-import { DiJava } from 'react-icons/di'
+} from "react-icons/si";
+import { DiJava } from "react-icons/di";
 
 interface CodePlaygroundProps {
-  onBack?: () => void
+  onBack?: () => void;
 }
 
 export default function CodePlayground({ onBack }: CodePlaygroundProps) {
-  const [code, setCode] = useState<string>('')
-  const [language, setLanguage] = useState<string>('python')
-  const [output, setOutput] = useState<string>('')
-  const [isRunning, setIsRunning] = useState<boolean>(false)
-  const [terminalHeight, setTerminalHeight] = useState<number>(200)
+  const [code, setCode] = useState<string>("");
+  const [language, setLanguage] = useState<string>("python");
+  const [output, setOutput] = useState<string>("");
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [terminalHeight, setTerminalHeight] = useState<number>(200);
 
   const getCourseIcon = (language: string): JSX.Element | null => {
     const courseIcons: Record<string, JSX.Element> = {
@@ -30,36 +30,36 @@ export default function CodePlayground({ onBack }: CodePlaygroundProps) {
       css: <SiCss3 />,
       typescript: <SiTypescript />,
       java: <DiJava />,
-    }
-    return courseIcons[language] || null
-  }
+    };
+    return courseIcons[language] || null;
+  };
 
   const handleRun = async () => {
-    setIsRunning(true)
-    setOutput('> Running...\n')
+    setIsRunning(true);
+    setOutput("> Running...\n");
 
     try {
       const result = await apiFetch<{
-        success: boolean
-        output: string
-        error?: string
+        success: boolean;
+        output: string;
+        error?: string;
       }>(`/validate_code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language, expectedOutput: '' }),
-      })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, language, expectedOutput: "" }),
+      });
 
       if (result.success) {
-        setOutput(`>>> ${result.output}`)
+        setOutput(`>>> ${result.output}`);
       } else {
-        setOutput(`>>> ${result.error || 'Error'}`)
+        setOutput(`>>> ${result.error || "Error"}`);
       }
     } catch (error) {
-      setOutput(`> Error\n${error}`)
+      setOutput(`> Error\n${error}`);
     } finally {
-      setIsRunning(false)
+      setIsRunning(false);
     }
-  }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-[#1e1e1e]">
@@ -84,23 +84,24 @@ export default function CodePlayground({ onBack }: CodePlaygroundProps) {
           <select
             value={language}
             onChange={(e) => {
-              const lang = e.target.value
-              setLanguage(lang)
-              if (lang === 'python') setCode('print("Hello, World!")')
-              if (lang === 'javascript') setCode('console.log("Hello, World!")')
-              if (lang === 'typescript')
+              const lang = e.target.value;
+              setLanguage(lang);
+              if (lang === "python") setCode('print("Hello, World!")');
+              if (lang === "javascript")
+                setCode('console.log("Hello, World!")');
+              if (lang === "typescript")
                 setCode(
-                  'const msg: string = "Hello, World!";\nconsole.log(msg)'
-                )
+                  'const msg: string = "Hello, World!";\nconsole.log(msg)',
+                );
             }}
             className="bg-[#3c3c3c] text-[#cccccc] px-3 py-1 rounded text-sm border border-[#2d2d30] outline-none focus:border-[#007acc]"
           >
-            <option value="python">{getCourseIcon('python')} Python</option>
+            <option value="python">{getCourseIcon("python")} Python</option>
             <option value="javascript">
-              {getCourseIcon('javascript')} JavaScript
+              {getCourseIcon("javascript")} JavaScript
             </option>
             <option value="typescript">
-              {getCourseIcon('typescript')} TypeScript
+              {getCourseIcon("typescript")} TypeScript
             </option>
           </select>
 
@@ -122,23 +123,23 @@ export default function CodePlayground({ onBack }: CodePlaygroundProps) {
           height="100%"
           language={language}
           value={code}
-          onChange={(value) => setCode(value || '')}
+          onChange={(value) => setCode(value || "")}
           theme="vs-dark"
           options={{
             minimap: { enabled: false },
             fontSize: 14,
             fontFamily: "'Fira Code', 'Consolas', 'Courier New', monospace",
             automaticLayout: true,
-            wordWrap: 'on',
-            matchBrackets: 'always',
-            autoClosingBrackets: 'always',
+            wordWrap: "on",
+            matchBrackets: "always",
+            autoClosingBrackets: "always",
             contextmenu: true,
             scrollBeyondLastLine: false,
             tabSize: 4,
             formatOnPaste: true,
             formatOnType: true,
-            lineNumbers: 'on',
-            renderLineHighlight: 'all',
+            lineNumbers: "on",
+            renderLineHighlight: "all",
             scrollbar: {
               useShadows: false,
               verticalScrollbarSize: 10,
@@ -185,5 +186,5 @@ export default function CodePlayground({ onBack }: CodePlaygroundProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

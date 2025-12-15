@@ -1,63 +1,63 @@
-import { useState, useEffect } from 'react'
-import type { Course, Module } from '../types/lesson'
-import { lessonService } from '../services/LessonService'
-import LessonEditDialog from './LessonEditDialog'
-import AdminHeader from './AdminPanel/AdminHeader'
+import { useState, useEffect } from "react";
+import type { Course, Module } from "../types/lesson";
+import { lessonService } from "../services/LessonService";
+import LessonEditDialog from "./LessonEditDialog";
+import AdminHeader from "./AdminPanel/AdminHeader";
 
-type AdminTab = 'courses' | 'lessons' | 'create' | 'create-course'
-import AdminTabs from './AdminPanel/AdminTabs'
-import CoursesTab from './AdminPanel/CoursesTab'
-import LessonsTab from './AdminPanel/LessonsTab'
-import CreateCourseTab from './AdminPanel/CreateCourseTab'
-import CreateLessonTab from './AdminPanel/CreateLessonTab'
+type AdminTab = "courses" | "lessons" | "create" | "create-course";
+import AdminTabs from "./AdminPanel/AdminTabs";
+import CoursesTab from "./AdminPanel/CoursesTab";
+import LessonsTab from "./AdminPanel/LessonsTab";
+import CreateCourseTab from "./AdminPanel/CreateCourseTab";
+import CreateLessonTab from "./AdminPanel/CreateLessonTab";
 
 interface AdminPanelProps {
-  onBack: () => void
+  onBack: () => void;
 }
 
 export default function AdminPanel({ onBack }: AdminPanelProps) {
-  const [activeTab, setActiveTab] = useState<AdminTab>('courses')
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
-  const [selectedModule, setSelectedModule] = useState<Module | null>(null)
-  const [courses, setCourses] = useState<Course[]>([])
-  const [loading, setLoading] = useState(true)
-  const [editingLessonId, setEditingLessonId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<AdminTab>("courses");
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadCourses()
-  }, [])
+    loadCourses();
+  }, []);
 
   const loadCourses = async () => {
     try {
-      const data = await lessonService.getCourses()
-      setCourses(data)
+      const data = await lessonService.getCourses();
+      setCourses(data);
     } catch (error) {
-      console.error('Error loading courses:', error)
+      console.error("Error loading courses:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEditSuccess = () => {
-    loadCourses()
-  }
+    loadCourses();
+  };
 
   const handleDeleteCourse = async (courseId: string) => {
     try {
-      await lessonService.deleteCourse(courseId)
-      alert('Kurs usuniety pomyslnie!')
-      await loadCourses()
-      setSelectedCourse(null)
-      setSelectedModule(null)
+      await lessonService.deleteCourse(courseId);
+      alert("Kurs usuniety pomyslnie!");
+      await loadCourses();
+      setSelectedCourse(null);
+      setSelectedModule(null);
     } catch (error) {
-      console.error('Error deleting course:', error)
-      alert('Blad podczas usuwania kursu: ' + error)
+      console.error("Error deleting course:", error);
+      alert("Blad podczas usuwania kursu: " + error);
     }
-  }
+  };
 
   const openEdit = (lessonId: string) => {
-    setEditingLessonId(lessonId)
-  }
+    setEditingLessonId(lessonId);
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50">
@@ -70,10 +70,10 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
           className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8"
           style={{
             boxShadow:
-              '0 12px 48px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05)',
+              "0 12px 48px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05)",
           }}
         >
-          {activeTab === 'courses' && (
+          {activeTab === "courses" && (
             <CoursesTab
               courses={courses}
               loading={loading}
@@ -86,7 +86,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
             />
           )}
 
-          {activeTab === 'lessons' && (
+          {activeTab === "lessons" && (
             <LessonsTab
               courses={courses}
               loading={loading}
@@ -94,7 +94,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
             />
           )}
 
-          {activeTab === 'create-course' && (
+          {activeTab === "create-course" && (
             <CreateCourseTab
               selectedCourse={selectedCourse}
               selectedModule={selectedModule}
@@ -105,7 +105,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
             />
           )}
 
-          {activeTab === 'create' && (
+          {activeTab === "create" && (
             <CreateLessonTab
               selectedCourse={selectedCourse}
               selectedModule={selectedModule}
@@ -126,5 +126,5 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
         />
       )}
     </div>
-  )
+  );
 }

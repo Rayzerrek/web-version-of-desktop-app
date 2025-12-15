@@ -1,150 +1,150 @@
-import { useState } from 'react'
-import { apiFetch, authHeaders } from '../services/ApiClient'
-import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
-import Toast, { type ToastType } from './Toast'
+import { useState } from "react";
+import { apiFetch, authHeaders } from "../services/ApiClient";
+import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
+import Toast, { type ToastType } from "./Toast";
 
 interface AuthResponse {
-  success: boolean
-  message: string
-  user_id?: string
-  access_token?: string
-  refresh_token?: string
+  success: boolean;
+  message: string;
+  user_id?: string;
+  access_token?: string;
+  refresh_token?: string;
 }
 
 interface AuthPanelProps {
-  onLoginSuccess?: () => void
+  onLoginSuccess?: () => void;
 }
 
 export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
-  const [isLogin, setIsLogin] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
-    message: string
-    type: ToastType
-  } | null>(null)
+    message: string;
+    type: ToastType;
+  } | null>(null);
 
   const handleGoogleLogin = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await apiFetch<{ authUrl: string }>(`/auth/google`, {
-        method: 'GET',
-      })
+        method: "GET",
+      });
       if (res && res.authUrl) {
-        window.open(res.authUrl, '_blank')
+        window.open(res.authUrl, "_blank");
       }
 
       setToast({
-        message: 'Otwarto przeglądarkę. Zaloguj się przez Google.',
-        type: 'info',
-      })
+        message: "Otwarto przeglądarkę. Zaloguj się przez Google.",
+        type: "info",
+      });
     } catch (error) {
       setToast({
-        message: 'Błąd podczas logowania przez Google: ' + error,
-        type: 'error',
-      })
+        message: "Błąd podczas logowania przez Google: " + error,
+        type: "error",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleLogin = async (email: string, password: string) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await apiFetch<AuthResponse>(`/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({ email, password }),
-      })
+      });
 
       if (response.success) {
         setToast({
           message: response.message,
-          type: 'success',
-        })
-        console.log('User ID:', response.user_id)
+          type: "success",
+        });
+        console.log("User ID:", response.user_id);
 
         if (response.access_token) {
-          localStorage.setItem('access_token', response.access_token)
+          localStorage.setItem("access_token", response.access_token);
         }
         if (response.refresh_token) {
-          localStorage.setItem('refresh_token', response.refresh_token)
+          localStorage.setItem("refresh_token", response.refresh_token);
         }
         if (response.user_id) {
-          localStorage.setItem('user_id', response.user_id)
+          localStorage.setItem("user_id", response.user_id);
         }
 
         setTimeout(() => {
-          onLoginSuccess?.()
-        }, 1000)
+          onLoginSuccess?.();
+        }, 1000);
       } else {
         setToast({
           message: response.message,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     } catch (error) {
       setToast({
-        message: 'Błąd podczas logowania: ' + error,
-        type: 'error',
-      })
+        message: "Błąd podczas logowania: " + error,
+        type: "error",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleRegister = async (
     email: string,
     password: string,
-    username: string
+    username: string,
   ) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await apiFetch<AuthResponse>(`/auth/register`, {
-        method: 'POST',
+        method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({ email, password, username }),
-      })
+      });
 
       if (response.success) {
         setToast({
           message: response.message,
-          type: 'success',
-        })
-        console.log('User ID:', response.user_id)
+          type: "success",
+        });
+        console.log("User ID:", response.user_id);
 
         if (response.access_token) {
-          localStorage.setItem('access_token', response.access_token)
+          localStorage.setItem("access_token", response.access_token);
         }
         if (response.refresh_token) {
-          localStorage.setItem('refresh_token', response.refresh_token)
+          localStorage.setItem("refresh_token", response.refresh_token);
         }
         if (response.user_id) {
-          localStorage.setItem('user_id', response.user_id)
+          localStorage.setItem("user_id", response.user_id);
         }
 
         setTimeout(() => {
           if (response.access_token) {
-            onLoginSuccess?.()
+            onLoginSuccess?.();
           } else {
-            setIsLogin(true)
+            setIsLogin(true);
           }
-        }, 1000)
+        }, 1000);
       } else {
         setToast({
           message: response.message,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     } catch (error) {
       setToast({
-        message: 'Błąd podczas rejestracji: ' + error,
-        type: 'error',
-      })
+        message: "Błąd podczas rejestracji: " + error,
+        type: "error",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -160,17 +160,17 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md p-8"
           style={{
             boxShadow:
-              '0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08)',
+              "0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08)",
           }}
         >
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-              {isLogin ? 'Witaj ponownie!' : 'Dołącz do nas!'}
+              {isLogin ? "Witaj ponownie!" : "Dołącz do nas!"}
             </h1>
             <p className="text-slate-600 dark:text-slate-300 text-lg">
               {isLogin
-                ? 'Zaloguj się, aby kontynuować naukę'
-                : 'Stwórz konto i zacznij swoją przygodę'}
+                ? "Zaloguj się, aby kontynuować naukę"
+                : "Stwórz konto i zacznij swoją przygodę"}
             </p>
           </div>
 
@@ -179,8 +179,8 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-3 px-4 rounded-full font-semibold transition-all duration-300 ${
                 isLogin
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-white dark:hover:bg-slate-600'
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-white dark:hover:bg-slate-600"
               }`}
             >
               Logowanie
@@ -189,8 +189,8 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-3 px-4 rounded-full font-semibold transition-all duration-300 ${
                 !isLogin
-                  ? 'bg-green-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-white dark:hover:bg-slate-600'
+                  ? "bg-green-600 text-white shadow-md"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-white dark:hover:bg-slate-600"
               }`}
             >
               Rejestracja
@@ -202,7 +202,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           ) : (
             <RegisterForm
               onSubmit={handleRegister}
-              onError={(message) => setToast({ message, type: 'error' })}
+              onError={(message) => setToast({ message, type: "error" })}
               disabled={loading}
             />
           )}
@@ -213,7 +213,9 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
                 <div className="w-full border-t border-slate-200 dark:border-slate-600"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">Lub</span>
+                <span className="px-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                  Lub
+                </span>
               </div>
             </div>
 
@@ -249,7 +251,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
             {isLogin ? (
               <p>
-                Nie masz konta?{' '}
+                Nie masz konta?{" "}
                 <button
                   onClick={() => setIsLogin(false)}
                   className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:cursor-pointer"
@@ -259,7 +261,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
               </p>
             ) : (
               <p>
-                Masz już konto?{' '}
+                Masz już konto?{" "}
                 <button
                   onClick={() => setIsLogin(true)}
                   className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium hover:cursor-pointer"
@@ -272,6 +274,5 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
         </div>
       </div>
     </>
-  )
+  );
 }
-

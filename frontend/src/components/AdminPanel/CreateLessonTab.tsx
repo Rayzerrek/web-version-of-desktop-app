@@ -1,57 +1,60 @@
-import { useState } from 'react'
-import type { Course, Module } from '../../types/lesson'
-import { lessonService } from '../../services/LessonService'
-import { createExerciseContent, createQuizContent } from '../../utils/lessonHelpers'
+import { useState } from "react";
+import type { Course, Module } from "../../types/lesson";
+import { lessonService } from "../../services/LessonService";
+import {
+  createExerciseContent,
+  createQuizContent,
+} from "../../utils/lessonHelpers";
 
-type AdminTab = 'courses' | 'lessons' | 'create' | 'create-course'
+type AdminTab = "courses" | "lessons" | "create" | "create-course";
 
 interface NewLessonData {
-  title: string
-  description: string
-  language: 'python' | 'javascript' | 'html' | 'css' | 'typescript'
-  lessonType: 'exercise' | 'theory' | 'quiz' | 'project'
-  xpReward: number
-  instruction: string
-  starterCode: string
-  solution: string
-  hint: string
-  expectedOutput: string
-  exampleCode: string
-  exampleDescription: string
-  quizQuestion: string
-  quizExplanation: string
-  quizOptions: Array<{ text: string; isCorrect: boolean; explanation: string }>
+  title: string;
+  description: string;
+  language: "python" | "javascript" | "html" | "css" | "typescript";
+  lessonType: "exercise" | "theory" | "quiz" | "project";
+  xpReward: number;
+  instruction: string;
+  starterCode: string;
+  solution: string;
+  hint: string;
+  expectedOutput: string;
+  exampleCode: string;
+  exampleDescription: string;
+  quizQuestion: string;
+  quizExplanation: string;
+  quizOptions: Array<{ text: string; isCorrect: boolean; explanation: string }>;
 }
 
 const initialNewLesson: NewLessonData = {
-  title: '',
-  description: '',
-  language: 'python',
-  lessonType: 'exercise',
+  title: "",
+  description: "",
+  language: "python",
+  lessonType: "exercise",
   xpReward: 10,
-  instruction: '',
-  starterCode: '',
-  solution: '',
-  hint: '',
-  expectedOutput: '',
-  exampleCode: '',
-  exampleDescription: '',
-  quizQuestion: '',
-  quizExplanation: '',
+  instruction: "",
+  starterCode: "",
+  solution: "",
+  hint: "",
+  expectedOutput: "",
+  exampleCode: "",
+  exampleDescription: "",
+  quizQuestion: "",
+  quizExplanation: "",
   quizOptions: [
-    { text: '', isCorrect: false, explanation: '' },
-    { text: '', isCorrect: false, explanation: '' },
-    { text: '', isCorrect: false, explanation: '' },
-    { text: '', isCorrect: false, explanation: '' },
+    { text: "", isCorrect: false, explanation: "" },
+    { text: "", isCorrect: false, explanation: "" },
+    { text: "", isCorrect: false, explanation: "" },
+    { text: "", isCorrect: false, explanation: "" },
   ],
-}
+};
 
 interface CreateLessonTabProps {
-  selectedCourse: Course | null
-  selectedModule: Module | null
-  setSelectedModule: (module: Module | null) => void
-  setActiveTab: (tab: AdminTab) => void
-  loadCourses: () => Promise<void>
+  selectedCourse: Course | null;
+  selectedModule: Module | null;
+  setSelectedModule: (module: Module | null) => void;
+  setActiveTab: (tab: AdminTab) => void;
+  loadCourses: () => Promise<void>;
 }
 
 export default function CreateLessonTab({
@@ -61,37 +64,41 @@ export default function CreateLessonTab({
   setActiveTab,
   loadCourses,
 }: CreateLessonTabProps) {
-  const [newLesson, setNewLesson] = useState<NewLessonData>(initialNewLesson)
+  const [newLesson, setNewLesson] = useState<NewLessonData>(initialNewLesson);
 
   const handleCreateLesson = async () => {
     if (!selectedModule) {
-      alert("Najpierw wybierz modul w zakladce 'Kursy'!")
-      return
+      alert("Najpierw wybierz modul w zakladce 'Kursy'!");
+      return;
     }
 
     try {
-      let lessonContent
+      let lessonContent;
 
-      if (newLesson.lessonType === 'quiz') {
-        const validOptions = newLesson.quizOptions.filter(opt => opt.text.trim() !== '')
+      if (newLesson.lessonType === "quiz") {
+        const validOptions = newLesson.quizOptions.filter(
+          (opt) => opt.text.trim() !== "",
+        );
         if (validOptions.length < 2) {
-          alert('Quiz musi miec co najmniej 2 opcje odpowiedzi!')
-          return
+          alert("Quiz musi miec co najmniej 2 opcje odpowiedzi!");
+          return;
         }
-        if (!validOptions.some(opt => opt.isCorrect)) {
-          alert('Co najmniej jedna odpowiedz musi byc oznaczona jako poprawna!')
-          return
+        if (!validOptions.some((opt) => opt.isCorrect)) {
+          alert(
+            "Co najmniej jedna odpowiedz musi byc oznaczona jako poprawna!",
+          );
+          return;
         }
         if (!newLesson.quizQuestion.trim()) {
-          alert('Pytanie quizu jest wymagane!')
-          return
+          alert("Pytanie quizu jest wymagane!");
+          return;
         }
 
         lessonContent = createQuizContent({
           question: newLesson.quizQuestion,
           options: validOptions,
           explanation: newLesson.quizExplanation || undefined,
-        })
+        });
       } else {
         lessonContent = createExerciseContent({
           instruction: newLesson.instruction,
@@ -101,7 +108,7 @@ export default function CreateLessonTab({
           expectedOutput: newLesson.expectedOutput,
           exampleCode: newLesson.exampleCode,
           exampleDescription: newLesson.exampleDescription,
-        })
+        });
       }
 
       await lessonService.createLesson({
@@ -115,18 +122,18 @@ export default function CreateLessonTab({
         orderIndex: 0,
         isLocked: false,
         estimatedMinutes: 15,
-      })
+      });
 
-      alert('Lekcja utworzona!')
+      alert("Lekcja utworzona!");
 
-      setNewLesson(initialNewLesson)
+      setNewLesson(initialNewLesson);
 
-      loadCourses()
+      loadCourses();
     } catch (error) {
-      console.error('Error creating lesson:', error)
-      alert('Error: ' + error)
+      console.error("Error creating lesson:", error);
+      alert("Error: " + error);
     }
-  }
+  };
 
   return (
     <div>
@@ -142,11 +149,11 @@ export default function CreateLessonTab({
             </h3>
           </div>
           <p className="text-yellow-700 mb-4">
-            Aby utworzyc lekcje, musisz najpierw wybrac kurs i modul, do
-            ktorego ma nalezec lekcja.
+            Aby utworzyc lekcje, musisz najpierw wybrac kurs i modul, do ktorego
+            ma nalezec lekcja.
           </p>
           <button
-            onClick={() => setActiveTab('courses')}
+            onClick={() => setActiveTab("courses")}
             className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition shadow-md"
           >
             Przejdz do wyboru kursu i modulu
@@ -156,9 +163,7 @@ export default function CreateLessonTab({
         <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-green-700">
-                Dodajesz lekcje do:
-              </p>
+              <p className="text-sm text-green-700">Dodajesz lekcje do:</p>
               <p className="text-lg font-bold text-green-800">
                 {selectedModule.iconEmoji} {selectedModule.title}
               </p>
@@ -170,8 +175,8 @@ export default function CreateLessonTab({
             </div>
             <button
               onClick={() => {
-                setSelectedModule(null)
-                setActiveTab('courses')
+                setSelectedModule(null);
+                setActiveTab("courses");
               }}
               className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition text-sm"
             >
@@ -183,8 +188,8 @@ export default function CreateLessonTab({
 
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          handleCreateLesson()
+          e.preventDefault();
+          handleCreateLesson();
         }}
         className="space-y-6"
       >
@@ -217,7 +222,12 @@ export default function CreateLessonTab({
               onChange={(e) =>
                 setNewLesson({
                   ...newLesson,
-                  language: e.target.value as 'python' | 'javascript' | 'html' | 'css' | 'typescript',
+                  language: e.target.value as
+                    | "python"
+                    | "javascript"
+                    | "html"
+                    | "css"
+                    | "typescript",
                 })
               }
               className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -259,7 +269,11 @@ export default function CreateLessonTab({
               onChange={(e) =>
                 setNewLesson({
                   ...newLesson,
-                  lessonType: e.target.value as 'exercise' | 'theory' | 'quiz' | 'project',
+                  lessonType: e.target.value as
+                    | "exercise"
+                    | "theory"
+                    | "quiz"
+                    | "project",
                 })
               }
               className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -291,11 +305,11 @@ export default function CreateLessonTab({
           </div>
         </div>
 
-        {newLesson.lessonType === 'exercise' && (
+        {newLesson.lessonType === "exercise" && (
           <ExerciseFields newLesson={newLesson} setNewLesson={setNewLesson} />
         )}
 
-        {newLesson.lessonType === 'quiz' && (
+        {newLesson.lessonType === "quiz" && (
           <QuizFields newLesson={newLesson} setNewLesson={setNewLesson} />
         )}
 
@@ -310,7 +324,7 @@ export default function CreateLessonTab({
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('courses')}
+            onClick={() => setActiveTab("courses")}
             className="px-8 py-4 bg-slate-200 hover:bg-slate-300 text-slate-700 
                                font-semibold rounded-full transition-all duration-200"
           >
@@ -319,12 +333,12 @@ export default function CreateLessonTab({
         </div>
       </form>
     </div>
-  )
+  );
 }
 
 interface ExerciseFieldsProps {
-  newLesson: NewLessonData
-  setNewLesson: (lesson: NewLessonData) => void
+  newLesson: NewLessonData;
+  setNewLesson: (lesson: NewLessonData) => void;
 }
 
 function ExerciseFields({ newLesson, setNewLesson }: ExerciseFieldsProps) {
@@ -461,12 +475,12 @@ function ExerciseFields({ newLesson, setNewLesson }: ExerciseFieldsProps) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 interface QuizFieldsProps {
-  newLesson: NewLessonData
-  setNewLesson: (lesson: NewLessonData) => void
+  newLesson: NewLessonData;
+  setNewLesson: (lesson: NewLessonData) => void;
 }
 
 function QuizFields({ newLesson, setNewLesson }: QuizFieldsProps) {
@@ -504,8 +518,8 @@ function QuizFields({ newLesson, setNewLesson }: QuizFieldsProps) {
               key={index}
               className={`p-4 rounded-xl border-2 transition-all ${
                 option.isCorrect
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-slate-200 bg-white'
+                  ? "border-green-500 bg-green-50"
+                  : "border-slate-200 bg-white"
               }`}
             >
               <div className="flex items-start gap-3">
@@ -516,37 +530,35 @@ function QuizFields({ newLesson, setNewLesson }: QuizFieldsProps) {
                       (opt, i) => ({
                         ...opt,
                         isCorrect: i === index,
-                      })
-                    )
+                      }),
+                    );
                     setNewLesson({
                       ...newLesson,
                       quizOptions: updatedOptions,
-                    })
+                    });
                   }}
                   className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-2 transition-all ${
                     option.isCorrect
-                      ? 'border-green-500 bg-green-500 text-white'
-                      : 'border-slate-300 hover:border-green-400'
+                      ? "border-green-500 bg-green-500 text-white"
+                      : "border-slate-300 hover:border-green-400"
                   }`}
                 >
-                  {option.isCorrect && (
-                    <span className="text-sm">V</span>
-                  )}
+                  {option.isCorrect && <span className="text-sm">V</span>}
                 </button>
                 <div className="flex-1 space-y-2">
                   <input
                     type="text"
                     value={option.text}
                     onChange={(e) => {
-                      const updatedOptions = [...newLesson.quizOptions]
+                      const updatedOptions = [...newLesson.quizOptions];
                       updatedOptions[index] = {
                         ...updatedOptions[index],
                         text: e.target.value,
-                      }
+                      };
                       setNewLesson({
                         ...newLesson,
                         quizOptions: updatedOptions,
-                      })
+                      });
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
                     placeholder={`Opcja ${index + 1}`}
@@ -555,15 +567,15 @@ function QuizFields({ newLesson, setNewLesson }: QuizFieldsProps) {
                     type="text"
                     value={option.explanation}
                     onChange={(e) => {
-                      const updatedOptions = [...newLesson.quizOptions]
+                      const updatedOptions = [...newLesson.quizOptions];
                       updatedOptions[index] = {
                         ...updatedOptions[index],
                         explanation: e.target.value,
-                      }
+                      };
                       setNewLesson({
                         ...newLesson,
                         quizOptions: updatedOptions,
-                      })
+                      });
                     }}
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none text-sm"
                     placeholder="Wyjasnienie (opcjonalne) - pojawi sie po wybraniu tej odpowiedzi"
@@ -593,5 +605,5 @@ function QuizFields({ newLesson, setNewLesson }: QuizFieldsProps) {
         />
       </div>
     </>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 interface AdminHeaderProps {
-  onBack: () => void
+  onBack: () => void;
 }
 
 export default function AdminHeader({ onBack }: AdminHeaderProps) {
@@ -9,9 +9,7 @@ export default function AdminHeader({ onBack }: AdminHeaderProps) {
         <h1 className="text-5xl font-bold text-slate-900 mb-2 tracking-tight">
           Panel Admina
         </h1>
-        <p className="text-slate-600 text-lg">
-          Zarządzaj kursami i lekcjami
-        </p>
+        <p className="text-slate-600 text-lg">Zarządzaj kursami i lekcjami</p>
       </div>
       <button
         onClick={onBack}
@@ -21,5 +19,5 @@ export default function AdminHeader({ onBack }: AdminHeaderProps) {
         Powrot
       </button>
     </div>
-  )
+  );
 }

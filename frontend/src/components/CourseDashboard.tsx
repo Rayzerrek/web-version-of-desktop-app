@@ -1,78 +1,83 @@
-import type { Course } from '../types/lesson'
-import { lessonService } from '../services/LessonService'
-import { progressService, type UserProgress } from '../services/ProgressService'
-import { useEffect, useState } from 'react'
-import CourseGrid from './CourseGrid'
-import SearchBar from './Searchbar'
-import ButtonComponent from './common/ButtonComponent'
+import type { Course } from "../types/lesson";
+import { lessonService } from "../services/LessonService";
+import {
+  progressService,
+  type UserProgress,
+} from "../services/ProgressService";
+import { useEffect, useState } from "react";
+import CourseGrid from "./CourseGrid";
+import SearchBar from "./Searchbar";
+import ButtonComponent from "./common/ButtonComponent";
 
 interface CourseDashboardProps {
-  onCourseSelect: (courseId: string) => void
+  onCourseSelect: (courseId: string) => void;
 }
 
 export default function CourseDashboard({
   onCourseSelect,
 }: CourseDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'main' | 'all'>('main')
-  const [courses, setCourses] = useState<Course[]>([])
-  const [loading, setLoading] = useState(true)
-  const [userProgress, setUserProgress] = useState<UserProgress[]>([])
+  const [activeTab, setActiveTab] = useState<"main" | "all">("main");
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
 
   useEffect(() => {
-    loadCourses()
-    loadProgress()
-  }, [])
+    loadCourses();
+    loadProgress();
+  }, []);
 
   const loadCourses = async () => {
     try {
-      const data = await lessonService.getCourses()
-      setCourses(data)
+      const data = await lessonService.getCourses();
+      setCourses(data);
     } catch (error) {
-      console.error('Error loading courses:', error)
+      console.error("Error loading courses:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadProgress = async () => {
     try {
-      const userId = localStorage.getItem('user_id')
+      const userId = localStorage.getItem("user_id");
       if (userId) {
-        const progress = await progressService.getUserProgress(userId)
-        setUserProgress(progress)
+        const progress = await progressService.getUserProgress(userId);
+        setUserProgress(progress);
       }
     } catch (error) {
-      console.error('Error loading progress:', error)
+      console.error("Error loading progress:", error);
     }
-  }
+  };
 
   const getCourseProgress = (course: Course): number => {
     const lessonIds = course.modules.flatMap((module) =>
-      module.lessons.map((lesson) => lesson.id)
-    )
-    return progressService.calculateCourseProgress(userProgress, lessonIds)
-  }
+      module.lessons.map((lesson) => lesson.id),
+    );
+    return progressService.calculateCourseProgress(userProgress, lessonIds);
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-slate-600 dark:text-slate-300">Ładowanie kursów...</p>
+          <p className="text-xl text-slate-600 dark:text-slate-300">
+            Ładowanie kursów...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   const handleSearchResultSelect = (result: {
-    type: 'course' | 'lesson'
-    id: string
+    type: "course" | "lesson";
+    id: string;
   }) => {
-    if (result.type === 'course') {
-      onCourseSelect(result.id)
+    if (result.type === "course") {
+      onCourseSelect(result.id);
     } else {
-      console.log('Selected lesson:', result.id)
+      console.log("Selected lesson:", result.id);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -98,20 +103,22 @@ export default function CourseDashboard({
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex gap-4 mb-0 bg-white dark:bg-slate-800 rounded-2xl p-2 shadow-lg w-full">
             <button
-              onClick={() => setActiveTab('main')}
-              className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 text-lg ${activeTab === 'main'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white '
-                }`}
+              onClick={() => setActiveTab("main")}
+              className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 text-lg ${
+                activeTab === "main"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white "
+              }`}
             >
               Przegląd
             </button>
             <button
-              onClick={() => setActiveTab('all')}
-              className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 text-lg ${activeTab === 'all'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white '
-                }`}
+              onClick={() => setActiveTab("all")}
+              className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 text-lg ${
+                activeTab === "all"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white "
+              }`}
             >
               Wszystkie kursy
             </button>
@@ -120,14 +127,14 @@ export default function CourseDashboard({
 
         <div className="h-20" />
 
-        {activeTab === 'main' ? (
+        {activeTab === "main" ? (
           <div className="space-y-12">
             {(() => {
               const startedCourses = courses.filter((course) => {
-                const progress = getCourseProgress(course)
-                return progress > 0 && progress < 100
-              })
-              if (startedCourses.length === 0) return null
+                const progress = getCourseProgress(course);
+                return progress > 0 && progress < 100;
+              });
+              if (startedCourses.length === 0) return null;
               return (
                 <section>
                   <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6">
@@ -139,7 +146,7 @@ export default function CourseDashboard({
                     getCourseProgress={getCourseProgress}
                   />
                 </section>
-              )
+              );
             })()}
 
             <section>
@@ -148,48 +155,46 @@ export default function CourseDashboard({
               </h2>
               {(() => {
                 const started = courses.filter((course) => {
-                  const progress = getCourseProgress(course)
-                  return progress > 0 && progress < 100
-                })
-                const startedIds = new Set(started.map((c) => c.id))
+                  const progress = getCourseProgress(course);
+                  return progress > 0 && progress < 100;
+                });
+                const startedIds = new Set(started.map((c) => c.id));
                 const recommended = courses
                   .filter(
                     (c) =>
                       !startedIds.has(c.id) &&
                       c.isPublished &&
-                      getCourseProgress(c) < 100
+                      getCourseProgress(c) < 100,
                   )
-                  .slice(0, 3)
+                  .slice(0, 3);
                 return (
                   <CourseGrid
                     courses={recommended}
                     onCourseSelect={onCourseSelect}
                     getCourseProgress={getCourseProgress}
                   />
-                )
+                );
               })()}
             </section>
 
             {courses.filter((course) => {
-              const progress = getCourseProgress(course)
-              return progress > 0 && progress < 100
+              const progress = getCourseProgress(course);
+              return progress > 0 && progress < 100;
             }).length === 0 && (
-                <div className="text-center py-12">
-                  <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-10 max-w-2xl mx-auto">
-                    <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-                      Rozpocznij swoją przygodę
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-300 mb-6 text-lg leading-relaxed">
-                      Wybierz jeden z polecanych kursów i zacznij naukę już teraz
-                    </p>
-                  </div>
+              <div className="text-center py-12">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-10 max-w-2xl mx-auto">
+                  <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+                    Rozpocznij swoją przygodę
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-6 text-lg leading-relaxed">
+                    Wybierz jeden z polecanych kursów i zacznij naukę już teraz
+                  </p>
                 </div>
-              )}
+              </div>
+            )}
 
             <div className="mt-16 text-center">
-              <div
-                className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-10 max-w-2xl mx-auto"
-              >
+              <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-10 max-w-2xl mx-auto">
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
                   Nie wiesz od czego zacząć?
                 </h2>
@@ -198,7 +203,7 @@ export default function CourseDashboard({
                   dopiero rozpoczynają swoją przygodę z programowaniem!
                 </p>
                 <ButtonComponent
-                  onClick={() => onCourseSelect('course-python')}
+                  onClick={() => onCourseSelect("course-python")}
                   variant="primary"
                   size="large"
                 >
@@ -208,9 +213,7 @@ export default function CourseDashboard({
             </div>
 
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-              <div
-                className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-100 dark:border-slate-700"
-              >
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-100 dark:border-slate-700">
                 <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-lg">
                   Nauka przez praktykę
                 </h3>
@@ -218,9 +221,7 @@ export default function CourseDashboard({
                   Pisz kod bezpośrednio w przeglądarce i zobacz efekty na żywo
                 </p>
               </div>
-              <div
-                className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-100 dark:border-slate-700"
-              >
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-100 dark:border-slate-700">
                 <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-lg">
                   System XP i osiągnięć
                 </h3>
@@ -228,9 +229,7 @@ export default function CourseDashboard({
                   Zdobywaj punkty i odblokuj nowe wyzwania
                 </p>
               </div>
-              <div
-                className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-100 dark:border-slate-700"
-              >
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-100 dark:border-slate-700">
                 <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-lg">
                   Utrzymuj streak
                 </h3>
@@ -254,5 +253,5 @@ export default function CourseDashboard({
         )}
       </div>
     </div>
-  )
+  );
 }

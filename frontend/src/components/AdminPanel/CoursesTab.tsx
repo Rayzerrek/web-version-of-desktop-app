@@ -1,16 +1,16 @@
-import type { Course, Module } from '../../types/lesson'
+import type { Course, Module } from "../../types/lesson";
 
-type AdminTab = 'courses' | 'lessons' | 'create' | 'create-course'
+type AdminTab = "courses" | "lessons" | "create" | "create-course";
 
 interface CoursesTabProps {
-  courses: Course[]
-  loading: boolean
-  selectedCourse: Course | null
-  selectedModule: Module | null
-  setSelectedCourse: (course: Course | null) => void
-  setSelectedModule: (module: Module | null) => void
-  setActiveTab: (tab: AdminTab) => void
-  onDeleteCourse: (courseId: string) => void
+  courses: Course[];
+  loading: boolean;
+  selectedCourse: Course | null;
+  selectedModule: Module | null;
+  setSelectedCourse: (course: Course | null) => void;
+  setSelectedModule: (module: Module | null) => void;
+  setActiveTab: (tab: AdminTab) => void;
+  onDeleteCourse: (courseId: string) => void;
 }
 
 export default function CoursesTab({
@@ -25,9 +25,7 @@ export default function CoursesTab({
 }: CoursesTabProps) {
   return (
     <div>
-      <h2 className="text-3xl font-bold text-slate-900 mb-6">
-        Lista kursow
-      </h2>
+      <h2 className="text-3xl font-bold text-slate-900 mb-6">Lista kursow</h2>
       {loading ? (
         <div className="text-center py-16">
           <p className="text-slate-600 text-lg">Ladowanie...</p>
@@ -40,7 +38,7 @@ export default function CoursesTab({
               className="p-6 bg-linear-to-br from-white to-slate-50 rounded-2xl 
                               border border-slate-200 hover:shadow-xl transition-all duration-300"
               style={{
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.06)",
               }}
             >
               <div className="flex items-center justify-between mb-3">
@@ -49,18 +47,18 @@ export default function CoursesTab({
                     {course.title}
                   </h3>
                   <p className="text-sm text-slate-600">
-                    {course.modules.length} modulow •{' '}
+                    {course.modules.length} modulow •{" "}
                     {course.modules.reduce(
                       (acc, m) => acc + m.lessons.length,
-                      0
-                    )}{' '}
+                      0,
+                    )}{" "}
                     lekcji
                   </p>
                 </div>
                 <div className="flex items-end gap-3">
                   <button
                     onClick={() => {
-                      onDeleteCourse(course.id)
+                      onDeleteCourse(course.id);
                     }}
                     className="px-5 py-2.5 rounded-full bg-red-500 hover:bg-red-600 text-white 
                                            text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
@@ -70,19 +68,17 @@ export default function CoursesTab({
                   <button
                     onClick={() => {
                       setSelectedCourse(
-                        selectedCourse?.id === course.id ? null : course
-                      )
-                      setSelectedModule(null)
+                        selectedCourse?.id === course.id ? null : course,
+                      );
+                      setSelectedModule(null);
                     }}
                     className={`px-5 py-2.5 rounded-full transition-all duration-200 text-sm font-semibold shadow-md hover:shadow-lg ${
                       selectedCourse?.id === course.id
-                        ? 'bg-linear-to-r from-purple-600 to-indigo-600 text-white'
-                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        ? "bg-linear-to-r from-purple-600 to-indigo-600 text-white"
+                        : "bg-blue-500 hover:bg-blue-600 text-white"
                     }`}
                   >
-                    {selectedCourse?.id === course.id
-                      ? 'Wybrany'
-                      : 'Wybierz'}
+                    {selectedCourse?.id === course.id ? "Wybrany" : "Wybierz"}
                   </button>
                 </div>
               </div>
@@ -97,14 +93,12 @@ export default function CoursesTab({
                       key={module.id}
                       className={`p-3 rounded-lg border-2 transition cursor-pointer ${
                         selectedModule?.id === module.id
-                          ? 'bg-green-100 border-green-400'
-                          : 'bg-white border-slate-200 hover:border-green-300'
+                          ? "bg-green-100 border-green-400"
+                          : "bg-white border-slate-200 hover:border-green-300"
                       }`}
                       onClick={() =>
                         setSelectedModule(
-                          selectedModule?.id === module.id
-                            ? null
-                            : module
+                          selectedModule?.id === module.id ? null : module,
                         )
                       }
                     >
@@ -124,8 +118,8 @@ export default function CoursesTab({
                             </span>
                             <button
                               onClick={(e) => {
-                                e.stopPropagation()
-                                setActiveTab('create')
+                                e.stopPropagation();
+                                setActiveTab("create");
                               }}
                               className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white text-xs rounded-lg transition"
                             >
@@ -138,8 +132,8 @@ export default function CoursesTab({
                   ))}
                   {course.modules.length === 0 && (
                     <p className="text-sm text-slate-500 italic">
-                      Brak modulow. Utworz pierwszy modul w zakladce
-                      "Utworz kurs".
+                      Brak modulow. Utworz pierwszy modul w zakladce "Utworz
+                      kurs".
                     </p>
                   )}
                 </div>
@@ -149,5 +143,5 @@ export default function CoursesTab({
         </div>
       )}
     </div>
-  )
+  );
 }

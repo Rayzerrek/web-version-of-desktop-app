@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import type { Lesson } from '../types/lesson'
-import { lessonService } from '../services/LessonService'
+import { useState, useEffect } from "react";
+import type { Lesson } from "../types/lesson";
+import { lessonService } from "../services/LessonService";
 
 interface LessonEditDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  lessonId: string
-  onSuccess: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  lessonId: string;
+  onSuccess: () => void;
 }
 
 export default function LessonEditDialog({
@@ -15,75 +15,75 @@ export default function LessonEditDialog({
   lessonId,
   onSuccess,
 }: LessonEditDialogProps) {
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [lesson, setLesson] = useState<Lesson | null>(null)
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    language: 'python' as
-      | 'python'
-      | 'javascript'
-      | 'html'
-      | 'css'
-      | 'typescript',
-    lessonType: 'exercise' as 'exercise' | 'theory' | 'quiz' | 'project',
+    title: "",
+    description: "",
+    language: "python" as
+      | "python"
+      | "javascript"
+      | "html"
+      | "css"
+      | "typescript",
+    lessonType: "exercise" as "exercise" | "theory" | "quiz" | "project",
     xpReward: 10,
-    instruction: '',
-    starterCode: '',
-    solution: '',
-    hint: '',
-    expectedOutput: '',
+    instruction: "",
+    starterCode: "",
+    solution: "",
+    hint: "",
+    expectedOutput: "",
     isLocked: false,
     estimatedMinutes: 15,
-  })
+  });
 
   useEffect(() => {
     if (isOpen && lessonId) {
-      loadLesson()
+      loadLesson();
     }
-  }, [isOpen, lessonId])
+  }, [isOpen, lessonId]);
 
   const loadLesson = async () => {
     try {
-      setLoading(true)
-      const data = await lessonService.getLessonById(lessonId)
+      setLoading(true);
+      const data = await lessonService.getLessonById(lessonId);
       if (!data) {
-        throw new Error('Lesson not found')
+        throw new Error("Lesson not found");
       }
-      setLesson(data)
+      setLesson(data);
 
-      const content = data.content
-      const isExercise = content.type === 'exercise'
+      const content = data.content;
+      const isExercise = content.type === "exercise";
 
       setFormData({
         title: data.title,
-        description: data.description || '',
+        description: data.description || "",
         language: data.language as any,
         lessonType: data.lessonType as any,
         xpReward: data.xpReward,
-        instruction: isExercise ? content.instruction : '',
-        starterCode: isExercise ? content.starterCode : '',
-        solution: isExercise ? content.solution : '',
-        hint: isExercise ? content.hint || '' : '',
+        instruction: isExercise ? content.instruction : "",
+        starterCode: isExercise ? content.starterCode : "",
+        solution: isExercise ? content.solution : "",
+        hint: isExercise ? content.hint || "" : "",
         expectedOutput:
           isExercise && content.testCases?.[0]
             ? content.testCases[0].expectedOutput
-            : '',
+            : "",
         isLocked: data.isLocked || false,
         estimatedMinutes: data.estimatedMinutes || 15,
-      })
+      });
     } catch (error) {
-      console.error('Error loading lesson:', error)
-      alert('Błąd ładowania lekcji: ' + error)
+      console.error("Error loading lesson:", error);
+      alert("Błąd ładowania lekcji: " + error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSave = async () => {
     try {
-      setSaving(true)
+      setSaving(true);
 
       const updates: any = {
         title: formData.title,
@@ -93,11 +93,11 @@ export default function LessonEditDialog({
         xpReward: formData.xpReward,
         isLocked: formData.isLocked,
         estimatedMinutes: formData.estimatedMinutes,
-      }
+      };
 
-      if (formData.lessonType === 'exercise') {
+      if (formData.lessonType === "exercise") {
         updates.content = {
-          type: 'exercise',
+          type: "exercise",
           instruction: formData.instruction,
           starterCode: formData.starterCode,
           solution: formData.solution,
@@ -107,22 +107,22 @@ export default function LessonEditDialog({
               expectedOutput: formData.expectedOutput,
             },
           ],
-        }
+        };
       }
 
-      await lessonService.updateLesson(lessonId, updates)
-      alert('Lekcja zaktualizowana!')
-      onSuccess()
-      onClose()
+      await lessonService.updateLesson(lessonId, updates);
+      alert("Lekcja zaktualizowana!");
+      onSuccess();
+      onClose();
     } catch (error) {
-      console.error('Error updating lesson:', error)
-      alert('Błąd aktualizacji: ' + error)
+      console.error("Error updating lesson:", error);
+      alert("Błąd aktualizacji: " + error);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div
@@ -306,7 +306,7 @@ export default function LessonEditDialog({
               </div>
 
               {/* Exercise-specific fields */}
-              {formData.lessonType === 'exercise' && (
+              {formData.lessonType === "exercise" && (
                 <>
                   <div className="border-t pt-6">
                     <h3 className="text-lg font-semibold text-slate-800 mb-4">
@@ -417,7 +417,7 @@ export default function LessonEditDialog({
             disabled={loading || saving || !formData.title}
             className="flex-1 py-3 bg-black disabled:bg-slate-300 text-white font-semibold rounded-lg transition shadow-md hover:shadow-lg"
           >
-            {saving ? 'Zapisywanie...' : 'Zapisz zmiany'}
+            {saving ? "Zapisywanie..." : "Zapisz zmiany"}
           </button>
           <button
             onClick={onClose}
@@ -429,5 +429,5 @@ export default function LessonEditDialog({
         </div>
       </div>
     </div>
-  )
+  );
 }

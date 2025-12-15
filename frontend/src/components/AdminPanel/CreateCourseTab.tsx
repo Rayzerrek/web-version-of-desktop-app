@@ -1,46 +1,46 @@
-import { useState } from 'react'
-import type { Course, Module } from '../../types/lesson'
-import { lessonService } from '../../services/LessonService'
+import { useState } from "react";
+import type { Course, Module } from "../../types/lesson";
+import { lessonService } from "../../services/LessonService";
 
-type AdminTab = 'courses' | 'lessons' | 'create' | 'create-course'
+type AdminTab = "courses" | "lessons" | "create" | "create-course";
 
 interface NewCourseData {
-  title: string
-  description: string
-  difficulty: 'beginner' | 'intermediate' | 'advanced'
-  language: string
-  color: string
-  estimatedHours: number
+  title: string;
+  description: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  language: string;
+  color: string;
+  estimatedHours: number;
 }
 
 interface NewModuleData {
-  title: string
-  description: string
-  iconEmoji: string
+  title: string;
+  description: string;
+  iconEmoji: string;
 }
 
 const initialNewCourse: NewCourseData = {
-  title: '',
-  description: '',
-  difficulty: 'beginner',
-  language: 'python',
-  color: '#3B82F6',
+  title: "",
+  description: "",
+  difficulty: "beginner",
+  language: "python",
+  color: "#3B82F6",
   estimatedHours: 10,
-}
+};
 
 const initialNewModule: NewModuleData = {
-  title: '',
-  description: '',
-  iconEmoji: '',
-}
+  title: "",
+  description: "",
+  iconEmoji: "",
+};
 
 interface CreateCourseTabProps {
-  selectedCourse: Course | null
-  selectedModule: Module | null
-  setSelectedCourse: (course: Course | null) => void
-  setSelectedModule: (module: Module | null) => void
-  setActiveTab: (tab: AdminTab) => void
-  loadCourses: () => Promise<void>
+  selectedCourse: Course | null;
+  selectedModule: Module | null;
+  setSelectedCourse: (course: Course | null) => void;
+  setSelectedModule: (module: Module | null) => void;
+  setActiveTab: (tab: AdminTab) => void;
+  loadCourses: () => Promise<void>;
 }
 
 export default function CreateCourseTab({
@@ -51,8 +51,8 @@ export default function CreateCourseTab({
   setActiveTab,
   loadCourses,
 }: CreateCourseTabProps) {
-  const [newCourse, setNewCourse] = useState<NewCourseData>(initialNewCourse)
-  const [newModule, setNewModule] = useState<NewModuleData>(initialNewModule)
+  const [newCourse, setNewCourse] = useState<NewCourseData>(initialNewCourse);
+  const [newModule, setNewModule] = useState<NewModuleData>(initialNewModule);
 
   const handleCreateCourse = async () => {
     try {
@@ -65,23 +65,23 @@ export default function CreateCourseTab({
         order_index: 0,
         isPublished: true,
         estimatedHours: newCourse.estimatedHours,
-      })
+      });
 
-      alert(`Kurs "${created.title}" utworzony!`)
-      setNewCourse(initialNewCourse)
+      alert(`Kurs "${created.title}" utworzony!`);
+      setNewCourse(initialNewCourse);
 
-      await loadCourses()
-      setSelectedCourse(created)
+      await loadCourses();
+      setSelectedCourse(created);
     } catch (error) {
-      console.error('Error creating course:', error)
-      alert('Error: ' + error)
+      console.error("Error creating course:", error);
+      alert("Error: " + error);
     }
-  }
+  };
 
   const handleCreateModule = async () => {
     if (!selectedCourse) {
-      alert('Najpierw wybierz kurs!')
-      return
+      alert("Najpierw wybierz kurs!");
+      return;
     }
 
     try {
@@ -91,18 +91,18 @@ export default function CreateCourseTab({
         description: newModule.description,
         orderIndex: selectedCourse.modules.length,
         iconEmoji: newModule.iconEmoji,
-      })
+      });
 
-      alert(`Modul "${created.title}" utworzony!`)
-      setNewModule(initialNewModule)
+      alert(`Modul "${created.title}" utworzony!`);
+      setNewModule(initialNewModule);
 
-      await loadCourses()
-      setSelectedModule(created)
+      await loadCourses();
+      setSelectedModule(created);
     } catch (error) {
-      console.error('Error creating module:', error)
-      alert('Error: ' + error)
+      console.error("Error creating module:", error);
+      alert("Error: " + error);
     }
-  }
+  };
 
   return (
     <div>
@@ -185,15 +185,16 @@ export default function CreateCourseTab({
                 onChange={(e) =>
                   setNewCourse({
                     ...newCourse,
-                    difficulty: e.target.value as 'beginner' | 'intermediate' | 'advanced',
+                    difficulty: e.target.value as
+                      | "beginner"
+                      | "intermediate"
+                      | "advanced",
                   })
                 }
                 className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
               >
                 <option value="beginner">Poczatkujacy</option>
-                <option value="intermediate">
-                  Sredniozaawansowany
-                </option>
+                <option value="intermediate">Sredniozaawansowany</option>
                 <option value="advanced">Zaawansowany</option>
               </select>
             </div>
@@ -327,22 +328,20 @@ export default function CreateCourseTab({
 
       {selectedModule && (
         <div className="p-6 bg-linear-to-br from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200">
-          <h3 className="text-xl font-bold text-slate-800 mb-2">
-            Gotowe!
-          </h3>
+          <h3 className="text-xl font-bold text-slate-800 mb-2">Gotowe!</h3>
           <p className="text-slate-700 mb-4">
             Modul "{selectedModule.title}" utworzony! Teraz mozesz:
           </p>
           <div className="flex gap-3">
             <button
-              onClick={() => setActiveTab('create')}
+              onClick={() => setActiveTab("create")}
               className="flex-1 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg transition shadow-md"
             >
               Dodaj lekcje do tego modulu
             </button>
             <button
               onClick={() => {
-                setSelectedModule(null)
+                setSelectedModule(null);
               }}
               className="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg transition"
             >
@@ -352,5 +351,5 @@ export default function CreateCourseTab({
         </div>
       )}
     </div>
-  )
+  );
 }

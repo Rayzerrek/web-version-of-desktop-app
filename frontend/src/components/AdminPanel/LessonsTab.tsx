@@ -1,9 +1,9 @@
-import type { Course, Module, Lesson } from '../../types/lesson'
+import type { Course, Module, Lesson } from "../../types/lesson";
 
 interface LessonsTabProps {
-  courses: Course[]
-  loading: boolean
-  onEditLesson: (lessonId: string) => void
+  courses: Course[];
+  loading: boolean;
+  onEditLesson: (lessonId: string) => void;
 }
 
 export default function LessonsTab({
@@ -37,8 +37,7 @@ export default function LessonsTab({
                       {lesson.title}
                     </h4>
                     <p className="text-sm text-slate-600">
-                      {course.title} • {lesson.language} •{' '}
-                      {lesson.xpReward} XP
+                      {course.title} • {lesson.language} • {lesson.xpReward} XP
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -53,11 +52,11 @@ export default function LessonsTab({
                     </button>
                   </div>
                 </div>
-              ))
-            )
+              )),
+            ),
           )}
         </div>
       )}
     </div>
-  )
+  );
 }
