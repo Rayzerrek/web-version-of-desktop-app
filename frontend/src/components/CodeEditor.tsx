@@ -1,6 +1,7 @@
 import Editor from '@monaco-editor/react'
 import { useState } from 'react'
 import { getFileNameForLanguage } from '../utils/courseUtils'
+import ButtonComponent from './common/ButtonComponent'
 
 interface CodeEditorProps {
   initialCode?: string
@@ -61,19 +62,22 @@ export default function CodeEditor({
 
         <div className="flex gap-2">
           {!readOnly && (
-            <button
+            <ButtonComponent
               onClick={handleReset}
-              className="px-3 py-1.5 bg-blue-600 text-sm text-white hover:bg-blue-700 rounded transition"
-              title="Reset code"
+              variant="primary"
+              size="small"
+              className="bg-blue-600! hover:bg-blue-700! text-white!"
             >
               Reset
-            </button>
+            </ButtonComponent>
           )}
           {onRun && (
-            <button
+            <ButtonComponent
               onClick={handleRun}
               disabled={isRunning || readOnly}
-              className="px-4 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              variant="success"
+              size="small"
+              className="bg-green-600! hover:bg-green-700! text-white!"
             >
               {isRunning ? (
                 <>
@@ -82,7 +86,7 @@ export default function CodeEditor({
               ) : (
                 <>Run Code</>
               )}
-            </button>
+            </ButtonComponent>
           )}
         </div>
       </div>

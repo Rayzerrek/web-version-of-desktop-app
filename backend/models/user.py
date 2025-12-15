@@ -15,24 +15,7 @@ class UserCreate(UserBase):
     @field_validator('password')
     @classmethod
     def validate_password(cls, v: str) -> str:
-        """
-        Validate password strength.
         
-        Requirements:
-        - Minimum 8 characters
-        - At least one uppercase letter
-        - At least one lowercase letter
-        - At least one digit
-        
-        Args:
-            v: Password string
-            
-        Returns:
-            Validated password
-            
-        Raises:
-            ValueError: If password doesn't meet requirements
-        """
         if len(v) < 8:
             raise ValueError('Password must be at least 8 characters')
         if not re.search(r'[A-Z]', v):
@@ -46,22 +29,7 @@ class UserCreate(UserBase):
     @field_validator('username')
     @classmethod
     def validate_username(cls, v: str) -> str:
-        """
-        Validate username format.
         
-        Requirements:
-        - 3-20 characters
-        - Only alphanumeric characters and underscores
-        
-        Args:
-            v: Username string
-            
-        Returns:
-            Validated username
-            
-        Raises:
-            ValueError: If username doesn't meet requirements
-        """
         if len(v) < 3:
             raise ValueError('Username must be at least 3 characters')
         if len(v) > 20:
@@ -83,6 +51,9 @@ class UserLogin(BaseModel):
 class UserResponse(UserBase):
     id: str
     created_at: datetime
+    onboarding_completed: Optional[bool] = False
+    learning_path: Optional[str] = None
+    experience_level: Optional[str] = None
     
     class Config:
         from_attributes = True

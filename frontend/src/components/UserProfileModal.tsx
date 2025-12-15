@@ -5,6 +5,7 @@ import {
     userProfileService,
     type UserStatistics,
 } from '../services/UserProfileService'
+import ButtonComponent from './common/ButtonComponent'
 
 interface UserProfileModalProps {
     onClose: () => void
@@ -78,12 +79,14 @@ export const UserProfileModal = ({ onClose }: UserProfileModalProps) => {
         >
             <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                 <div className="relative bg-indigo-600 p-8 text-white">
-                    <button
+                    <ButtonComponent
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-white/80 hover:text-white text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-all"
+                        variant="outline"
+                        size="small"
+                        className="absolute top-4 right-4 bg-transparent! border-0! text-white/80 hover:text-white text-2xl w-8 h-8 p-0! shadow-none! hover:bg-white/20! rounded-full!"
                     >
                         ×
-                    </button>
+                    </ButtonComponent>
 
                     <div className="flex items-start space-x-6">
                         {profile.avatar_url ? (

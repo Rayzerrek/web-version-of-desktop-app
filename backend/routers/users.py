@@ -1,7 +1,3 @@
-"""
-User profile and statistics router.
-Uses 'profiles' table from Supabase schema.
-"""
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
@@ -23,6 +19,9 @@ class UserProfile(BaseModel):
     longest_streak_days: int = 0
     joined_at: Optional[str] = None
     role: str = "user"
+    onboarding_completed: Optional[bool] = False
+    learning_path: Optional[str] = None
+    experience_level: Optional[str] = None
 
 
 class UserStatistics(BaseModel):
@@ -42,8 +41,75 @@ class UpdateUsernameRequest(BaseModel):
 
 
 def calculate_level(total_xp: int) -> int:
-    """Calculate level based on total XP (1000 XP per level)"""
     return max(1, (total_xp // 1000) + 1)
+
+
+@router.get("/me", response_model=UserProfile)
+async def get_current_user_profile(
+    token: str = Depends(get_access_token)
+):
+    try:
+        supabase = get_admin_supabase()
+        
+        
+        user_response = supabase.auth.get_user(token)
+        if not user_response or not user_response.user:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user_id = user_response.user.id
+        user = user_response.user
+        
+        profile_response = supabase.table("profiles") \
+            .select("*") \
+            .eq("id", user_id) \
+            .execute()
+        
+        if not profile_response.data:
+            profile_data = {
+                "id": user_id,
+                "username": user.email.split("@")[0] if user.email else "User",
+                "streak_days": 0,
+                "onboarding_completed": False
+            }
+            supabase.table("profiles").insert(profile_data).execute()
+            profile = profile_data
+        else:
+            profile = profile_response.data[0]
+        
+        completed_progress = supabase.table("user_progress") \
+            .select("lesson_id, lessons(xp_reward)") \
+            .eq("user_id", user_id) \
+            .eq("status", "completed") \
+            .execute()
+        
+        total_xp = 0
+        if completed_progress.data:
+            for progress in completed_progress.data:
+                lesson_data = progress.get("lessons")
+                if lesson_data and lesson_data.get("xp_reward"):
+                    total_xp += lesson_data["xp_reward"]
+        
+        streak_days = profile.get("streak_days", 0) or 0
+        
+        return UserProfile(
+            id=user_id,
+            email=user.email or "",
+            username=profile.get("username"),
+            avatar_url=profile.get("avatar_url"),
+            total_xp=total_xp,
+            level=calculate_level(total_xp),
+            current_streak_days=streak_days,
+            longest_streak_days=streak_days,
+            joined_at=str(user.created_at) if user.created_at else None,
+            role=profile.get("role", "user"),
+            onboarding_completed=profile.get("onboarding_completed", False),
+            learning_path=profile.get("learning_path"),
+            experience_level=profile.get("experience_level")
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        handle_supabase_error(e, "Failed to fetch user profile")
 
 
 @router.get("/{user_id}/profile", response_model=UserProfile)
@@ -51,7 +117,6 @@ async def get_user_profile(
     user_id: str,
     token: str = Depends(get_access_token)
 ):
-    """Get user profile with XP, level, and streak data from profiles table"""
     try:
         supabase = get_admin_supabase()
         
@@ -103,7 +168,10 @@ async def get_user_profile(
             current_streak_days=streak_days,
             longest_streak_days=streak_days,  # Could be tracked separately if needed
             joined_at=str(user.created_at) if user.created_at else None,
-            role=profile.get("role", "user")
+            role=profile.get("role", "user"),
+            onboarding_completed=profile.get("onboarding_completed", False),
+            learning_path=profile.get("learning_path"),
+            experience_level=profile.get("experience_level")
         )
     except HTTPException:
         raise
@@ -116,7 +184,6 @@ async def get_user_statistics(
     user_id: str,
     token: str = Depends(get_access_token)
 ):
-    """Get user learning statistics from user_progress and daily_activity"""
     try:
         supabase = get_admin_supabase()
         
@@ -167,7 +234,6 @@ async def update_user_avatar(
     request: UpdateAvatarRequest,
     token: str = Depends(get_access_token)
 ):
-    """Update user avatar URL in profiles table"""
     try:
         supabase = get_admin_supabase()
         
@@ -197,7 +263,6 @@ async def update_user_username(
     request: UpdateUsernameRequest,
     token: str = Depends(get_access_token)
 ):
-    """Update user username in profiles table"""
     try:
         supabase = get_admin_supabase()
         

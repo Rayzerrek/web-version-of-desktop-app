@@ -4,6 +4,7 @@ import { progressService, type UserProgress } from '../services/ProgressService'
 import { useEffect, useState } from 'react'
 import CourseGrid from './CourseGrid'
 import SearchBar from './Searchbar'
+import ButtonComponent from './common/ButtonComponent'
 
 interface CourseDashboardProps {
   onCourseSelect: (courseId: string) => void
@@ -196,12 +197,13 @@ export default function CourseDashboard({
                   Polecamy zacząć od kursu Python - idealny dla osób, które
                   dopiero rozpoczynają swoją przygodę z programowaniem!
                 </p>
-                <button
+                <ButtonComponent
                   onClick={() => onCourseSelect('course-python')}
-                  className="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all duration-200 shadow-lg hover:shadow-xl"
+                  variant="primary"
+                  size="large"
                 >
                   Zacznij od Pythona
-                </button>
+                </ButtonComponent>
               </div>
             </div>
 

@@ -1,6 +1,7 @@
 import { useState, type JSX } from 'react'
 import { Editor } from '@monaco-editor/react'
 import { apiFetch } from '../services/ApiClient'
+import ButtonComponent from './common/ButtonComponent'
 import {
   SiPython,
   SiJavascript,
@@ -65,12 +66,14 @@ export default function CodePlayground({ onBack }: CodePlaygroundProps) {
       <div className="flex items-center justify-between bg-[#323233] px-4 py-2 border-b border-[#2d2d30]">
         <div className="flex items-center gap-4">
           {onBack && (
-            <button
+            <ButtonComponent
               onClick={onBack}
-              className="text-[#cccccc] hover:text-white text-sm"
+              variant="outline"
+              size="small"
+              className="bg-transparent! border-0! text-[#cccccc]! hover:text-white! shadow-none!"
             >
               ← Back
-            </button>
+            </ButtonComponent>
           )}
           <span className="text-[#cccccc] text-sm font-medium">
             Code Playground
@@ -101,13 +104,15 @@ export default function CodePlayground({ onBack }: CodePlaygroundProps) {
             </option>
           </select>
 
-          <button
+          <ButtonComponent
             onClick={handleRun}
             disabled={isRunning}
-            className="bg-[#0e639c] hover:bg-[#1177bb] disabled:bg-[#3c3c3c] text-white px-4 py-1 rounded text-sm transition flex items-center gap-2"
+            variant="primary"
+            size="small"
+            className="bg-[#0e639c]! hover:bg-[#1177bb]! disabled:bg-[#3c3c3c]! text-white!"
           >
             <span>Run</span>
-          </button>
+          </ButtonComponent>
         </div>
       </div>
 

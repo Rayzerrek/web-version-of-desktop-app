@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ButtonComponent from './common/ButtonComponent'
 
 interface LessonSuccessModalProps {
   isOpen: boolean
@@ -106,18 +107,22 @@ export default function LessonSuccessModal({
           </div>
 
           <div className="space-y-3">
-            <button
+            <ButtonComponent
               onClick={onNextLesson}
-              className="w-full bg-green-600 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl"
+              variant="success"
+              fullWidth={true}
+              size="large"
             >
               Następna lekcja
-            </button>
-            <button
+            </ButtonComponent>
+            <ButtonComponent
               onClick={onClose}
-              className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-4 rounded-2xl transition-all duration-200"
+              variant="outline"
+              fullWidth={true}
+              size="large"
             >
               Powrót do kursu
-            </button>
+            </ButtonComponent>
           </div>
         </div>
       </div>

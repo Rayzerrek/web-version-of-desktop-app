@@ -157,6 +157,7 @@ export default function SearchBar({
                              focus:outline-1 focus:ring-0
                              transition-all duration-300 ease-out
                              shadow-md hover:shadow-lg focus:shadow-xl
+                             bg-slate-50
                              border border-transparent"
           style={{
             backgroundColor: "#F3F4F6",

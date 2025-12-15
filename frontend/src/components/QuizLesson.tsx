@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Lesson, Course, QuizLesson as QuizLessonType } from '../types/lesson'
 import { progressService } from '../services/ProgressService'
 import LessonSuccessModal from './LessonSuccessModal'
+import ButtonComponent from './common/ButtonComponent'
 
 interface QuizLessonProps {
     lesson: Lesson
@@ -36,12 +37,12 @@ export default function QuizLesson({
                         <p className="text-slate-600 dark:text-slate-300 mb-6">
                             Ten quiz nie został jeszcze prawidłowo skonfigurowany. Skontaktuj się z administratorem.
                         </p>
-                        <button
+                        <ButtonComponent
                             onClick={() => onNextLesson?.(lessonId)}
-                            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition"
+                            variant="info"
                         >
                             Przejdź dalej
-                        </button>
+                        </ButtonComponent>
                     </div>
                 </div>
             </div>
@@ -110,7 +111,6 @@ export default function QuizLesson({
                         <p className="text-slate-600 dark:text-slate-300 mt-3">{lesson.description}</p>
                     </div>
 
-                    {/* Main Quiz Card */}
                     <div
                         className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8"
                     >
@@ -219,9 +219,9 @@ export default function QuizLesson({
                         {showFeedback && (
                             <div className="mt-8 space-y-4">
                                 {isCorrect ? (
-                                    <div className="bg-linear-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-800 rounded-2xl p-6 text-center">
+                                    <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-2xl p-6 text-center">
                                         <h3 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
-                                            🎉 Świetnie!
+                                            Świetnie!
                                         </h3>
                                         <p className="text-green-600 dark:text-green-300">
                                             Poprawnie odpowiedziałeś na pytanie!
@@ -230,17 +230,18 @@ export default function QuizLesson({
                                 ) : (
                                     <div className="bg-linear-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 border border-red-200 dark:border-red-800 rounded-2xl p-6">
                                         <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
-                                            ❌ Nie do końca...
+                                            Nie do końca...
                                         </h3>
                                         <p className="text-red-600 dark:text-red-300 mb-4">
                                             To nie była poprawna odpowiedź. Spróbuj jeszcze raz!
                                         </p>
-                                        <button
+                                        <ButtonComponent
                                             onClick={handleRetry}
-                                            className="w-full py-3 bg-linear-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-xl transition shadow-lg hover:shadow-xl"
+                                            variant="danger"
+                                            fullWidth={true}
                                         >
                                             Spróbuj ponownie
-                                        </button>
+                                        </ButtonComponent>
                                     </div>
                                 )}
                             </div>
@@ -248,7 +249,7 @@ export default function QuizLesson({
 
                         {/* XP Reward */}
                         {!showFeedback && (
-                            <div className="mt-8 flex items-center justify-between bg-linear-to-r from-amber-400 to-orange-500 rounded-2xl p-5 shadow-lg">
+                            <div className="mt-8 flex items-center justify-between bg-amber-400 rounded-2xl p-5 shadow-lg">
                                 <span className="text-white font-semibold">
                                     Nagroda za ukończenie
                                 </span>

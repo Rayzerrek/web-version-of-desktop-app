@@ -4,6 +4,8 @@ import LessonDemo from './components/LessonDemo'
 import CourseDashboard from './components/CourseDashboard'
 import AdminPanel from './components/AdminPanel'
 import CodePlayground from './components/CodePlayground'
+import { OnBoardingQuiz } from './components/OnBoardingQuiz'
+import { OnboardingDemoLesson } from './components/OnboardingDemoLesson'
 import ThemeToggle from './components/ThemeToggle'
 import { UserProfileDropdown } from './components/UserProfileDropdown'
 import Toast, { type ToastType } from './components/Toast'
@@ -11,15 +13,20 @@ import Button from './components/common/Button'
 import { lessonService } from './services/LessonService'
 import { useAuth } from './hooks/useAuth'
 import { apiFetch, authHeaders } from './services/ApiClient'
+import type { OnboardingRecommendation, OnboardingAnswers } from './types/onboarding'
 import './styles/App.css'
 
 function App() {
   const { isAuthenticated, isAdmin, refreshAdmin, login, logout } = useAuth()
   const [currentView, setCurrentView] = useState<
-    'auth' | 'dashboard' | 'lesson' | 'admin' | 'playground'
+    'auth' | 'dashboard' | 'lesson' | 'admin' | 'playground' | 'onboarding' | 'onboarding-demo'
   >('auth')
   const [selectedCourseId, setSelectedCourseId] = useState<string>('')
   const [selectedLessonId, setSelectedLessonId] = useState<string>('')
+  const [onboardingData, setOnboardingData] = useState<{
+    recommendation?: OnboardingRecommendation;
+    answers?: OnboardingAnswers;
+  }>({})
   const [toast, setToast] = useState<{
     message: string
     type: ToastType
@@ -29,10 +36,30 @@ function App() {
     if (isAuthenticated) {
       refreshAdmin()
       if (currentView === 'auth') {
-        setCurrentView('dashboard')
+        // Check if user needs onboarding
+        checkOnboardingStatus()
       }
     }
   }, [isAuthenticated, refreshAdmin, currentView])
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const token = localStorage.getItem('access_token')
+      const response = await apiFetch<{ onboarding_completed: boolean }>('/users/me', {
+        method: 'GET',
+        headers: authHeaders(token || ''),
+      })
+      
+      if (response && !response.onboarding_completed) {
+        setCurrentView('onboarding')
+      } else {
+        setCurrentView('dashboard')
+      }
+    } catch (error) {
+      console.error('Error checking onboarding status:', error)
+      setCurrentView('dashboard')
+    }
+  }
 
   const handleCourseSelect = async (courseId: string) => {
     console.log('Selected course ID:', courseId)
@@ -86,6 +113,28 @@ function App() {
     setCurrentView('admin')
   }
 
+  const handleOnboardingComplete = (recommendation: OnboardingRecommendation, answers: OnboardingAnswers) => {
+    setOnboardingData({ recommendation, answers })
+    setCurrentView('onboarding-demo')
+  }
+
+  const handleOnboardingFinish = () => {
+    setCurrentView('dashboard')
+  }
+
+  if (currentView === 'onboarding') {
+    return <OnBoardingQuiz onComplete={handleOnboardingComplete} onSkip={() => setCurrentView('dashboard')} />
+  }
+
+  if (currentView === 'onboarding-demo') {
+    return (
+      <OnboardingDemoLesson
+        recommendation={onboardingData.recommendation}
+        onFinish={handleOnboardingFinish}
+      />
+    )
+  }
+
   if (currentView === 'admin') {
     if (!isAdmin) {
       setToast({
@@ -109,6 +158,8 @@ function App() {
 
   if (currentView === 'playground') {
     return <CodePlayground onBack={() => setCurrentView('dashboard')} />
+
+    
   }
 
   if (currentView === 'lesson') {
@@ -137,7 +188,9 @@ function App() {
 
   if (isAuthenticated && currentView === 'dashboard') {
     return (
+      
       <div className="bg-background dark:bg-background-dark min-h-screen">
+        
         {toast && (
           <Toast
             message={toast.message}

@@ -24,6 +24,7 @@ from routers import (
     users_router,
     achievements_router
 )
+from routers.onboarding import router as onboarding_router
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -35,7 +36,6 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     logger.info(f"Backend: {settings.backend_url}")
     logger.info(f"Frontend: {settings.cors_origins}")
-   
     
     yield
     
@@ -116,6 +116,7 @@ app.include_router(progress_router)
 app.include_router(search_router)
 app.include_router(users_router)
 app.include_router(achievements_router)
+app.include_router(onboarding_router)
 
 
 @app.get("/")
