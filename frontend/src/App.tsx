@@ -133,8 +133,25 @@ function App() {
     setCurrentView("onboarding-demo");
   };
 
-  const handleOnboardingFinish = () => {
-    setCurrentView("dashboard");
+  const handleOnboardingFinish = async () => {
+    if(onboardingData.recommendation?.courseId) {
+      try {
+        const courses = await lessonService.getCourses();
+        const recommendedCourse = courses.find(
+          (course) => course.id === onboardingData.recommendation?.courseId,
+        )
+        if(recommendedCourse) {
+          await handleCourseSelect(recommendedCourse.id);
+        } else {
+          setCurrentView("dashboard");
+        }
+      } catch (error) {
+        console.error(`Error loading recommended course: ${error}`);
+        setCurrentView("dashboard");
+      }
+    } else {
+      setCurrentView("dashboard");
+    }
   };
 
   if (currentView === "onboarding") {

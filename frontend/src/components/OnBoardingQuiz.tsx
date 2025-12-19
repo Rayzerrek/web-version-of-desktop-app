@@ -74,16 +74,16 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
   };
 
   return (
-    <div className="min-h-screen blue-50 dark:bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-blue-50 dark:bg-gray-900 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
         <div className="mb-8">
           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <span>Step {step} of 4</span>
+            <span>Krok {step} z 4</span>
             <button
               onClick={handleSkip}
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
-              Skip
+              Pomiń
             </button>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -98,11 +98,11 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Greetings! 👋
+                Witaj! 👋
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-300">
-                Let's find a learning path for you. What are you most interested
-                in?
+                Znajdźmy dla Ciebie idealną ścieżkę nauki. Co Cię najbardziej
+                interesuje?
               </p>
             </div>
 
@@ -129,7 +129,7 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
               disabled={!answers.interest}
               className="w-full"
             >
-              Continue
+              Dalej
             </ButtonComponent>
           </div>
         )}
@@ -137,14 +137,13 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
         {step === 2 && (
           <div className="space-y-6">
             <div className="text-center py-8">
-              <div className="text-6xl mb-6">🚀</div>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 {getInterstitialMessage(answers)}
               </p>
             </div>
 
             <ButtonComponent onClick={handleNext} className="w-full">
-              Continue
+              Dalej
             </ButtonComponent>
           </div>
         )}
@@ -153,7 +152,7 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
           <div className="space-y-6">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Have you coded much before?
+                Czy masz już doświadczenie w programowaniu?
               </h2>
             </div>
 
@@ -180,16 +179,14 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
               disabled={!answers.experience}
               className="w-full"
             >
-              Continue
+              Dalej
             </ButtonComponent>
           </div>
         )}
 
-        {/* Step 4: Final Interstitial */}
         {step === 4 && (
           <div className="space-y-6">
             <div className="text-center py-8">
-              <div className="text-6xl mb-6">🎯</div>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 {getFinalMessage(answers)}
               </p>
@@ -200,7 +197,7 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
               disabled={isLoading}
               className="w-full"
             >
-              {isLoading ? "Loading..." : "Let's Start!"}
+              {isLoading ? "Ładowanie..." : "Zaczynajmy!"}
             </ButtonComponent>
           </div>
         )}
