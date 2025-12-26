@@ -1,9 +1,5 @@
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
 .env
 .venv
 env/
@@ -16,12 +12,4 @@ ENV/
 *.swp
 *.swo
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Misc
-*.log
-.DS_Store
-Thumbs.db
+.md

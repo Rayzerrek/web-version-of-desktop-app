@@ -30,7 +30,6 @@ export default function QuizLesson({
 
   const quizContent = lesson.content as QuizLessonType;
 
-  // Safety check for invalid quiz content
   if (
     !quizContent ||
     !quizContent.question ||
@@ -41,7 +40,6 @@ export default function QuizLesson({
       <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6">
         <div className="max-w-3xl mx-auto">
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 text-center">
-            <div className="text-6xl mb-4">⚠️</div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
               Nieprawidłowe dane quizu
             </h2>
