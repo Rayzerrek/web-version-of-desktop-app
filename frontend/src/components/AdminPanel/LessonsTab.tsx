@@ -4,12 +4,14 @@ interface LessonsTabProps {
   courses: Course[];
   loading: boolean;
   onEditLesson: (lessonId: string) => void;
+  onDeleteLesson?: (lessonId: string) => void;
 }
 
 export default function LessonsTab({
   courses,
   loading,
   onEditLesson,
+  onDeleteLesson,
 }: LessonsTabProps) {
   return (
     <div>
@@ -47,7 +49,14 @@ export default function LessonsTab({
                     >
                       Edytuj
                     </button>
-                    <button className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm">
+                    <button 
+                      className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                      onClick={() => {
+                        if (confirm(`Czy na pewno chcesz usunąć lekcję "${lesson.title}"?`)) {
+                          onDeleteLesson?.(lesson.id);
+                        }
+                      }}
+                    >
                       Usun
                     </button>
                   </div>

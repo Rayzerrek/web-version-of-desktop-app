@@ -89,6 +89,15 @@ async def validate_code(request: CodeValidationRequest):
             return await code_executor.validate_javascript(request.code, request.expected_output)
         elif request.language == "typescript":
             return await code_executor.validate_typescript(request.code, request.expected_output)
+        elif request.language in ["html", "css"]:
+            # HTML and CSS are rendered client-side, so we just return success
+            # The frontend handles the preview
+            return CodeValidationResponse(
+                success=True,
+                output="Code rendered successfully in browser",
+                error=None,
+                is_correct=True
+            )
         else:
             raise HTTPException(
                 status_code=400,

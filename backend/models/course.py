@@ -22,7 +22,7 @@ class LessonContentBase(BaseModel):
 
 
 class TestCase(BaseModel):
-    input: str
+    input: Optional[str] = ""
     expectedOutput: str
     description: Optional[str] = None
 
@@ -31,7 +31,7 @@ class ExerciseContent(LessonContentBase):
     type: Literal["exercise"] = "exercise"
     instruction: str
     starterCode: str
-    solution: str
+    solution: Optional[str] = ""
     hint: Optional[str] = None
     exampleCode: Optional[str] = None
     exampleDescription: Optional[str] = None
@@ -41,6 +41,8 @@ class ExerciseContent(LessonContentBase):
 class TheoryContent(LessonContentBase):
     type: Literal["theory"] = "theory"
     content: str
+    exampleCode: Optional[str] = None
+    exampleDescription: Optional[str] = None
     examples: Optional[List[str]] = None
 
 
@@ -107,7 +109,7 @@ class LessonResponse(BaseModel):
     language: Language
     orderIndex: int = Field(default=0, validation_alias='order_index')
     xpReward: int = Field(default=10, validation_alias='xp_reward')
-    estimatedMinutes: int = Field(default=15, validation_alias='estimated_minutes')
+    estimatedMinutes: Optional[int] = Field(default=15, validation_alias='estimated_minutes')
     isLocked: bool = Field(default=False, validation_alias='is_locked')
     content: Any
     created_at: datetime

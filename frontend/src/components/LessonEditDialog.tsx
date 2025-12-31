@@ -34,6 +34,12 @@ export default function LessonEditDialog({
     solution: "",
     hint: "",
     expectedOutput: "",
+    exampleCode: "",
+    exampleDescription: "",
+    theoryContent: "",
+    quizQuestion: "",
+    quizOptions: [{text: "", isCorrect: false, explanation: ""}] as Array<{text: string, isCorrect: boolean, explanation: string}>,
+    quizExplanation: "",
     isLocked: false,
     estimatedMinutes: 15,
   });
@@ -55,6 +61,8 @@ export default function LessonEditDialog({
 
       const content = data.content;
       const isExercise = content.type === "exercise";
+      const isQuiz = content.type === "quiz";
+      const isTheory = content.type === "theory";
 
       setFormData({
         title: data.title,
@@ -70,6 +78,12 @@ export default function LessonEditDialog({
           isExercise && content.testCases?.[0]
             ? content.testCases[0].expectedOutput
             : "",
+        exampleCode: (isExercise || isTheory) ? content.exampleCode || "" : "",
+        exampleDescription: (isExercise || isTheory) ? content.exampleDescription || "" : "",
+        theoryContent: isTheory ? content.content || "" : "",
+        quizQuestion: isQuiz ? content.question : "",
+        quizOptions: isQuiz ? content.options : [{text: "", isCorrect: false, explanation: ""}],
+        quizExplanation: isQuiz ? content.explanation || "" : "",
         isLocked: data.isLocked || false,
         estimatedMinutes: data.estimatedMinutes || 15,
       });
@@ -102,11 +116,27 @@ export default function LessonEditDialog({
           starterCode: formData.starterCode,
           solution: formData.solution,
           hint: formData.hint || undefined,
+          exampleCode: formData.exampleCode || undefined,
+          exampleDescription: formData.exampleDescription || undefined,
           testCases: [
             {
               expectedOutput: formData.expectedOutput,
             },
           ],
+        };
+      } else if (formData.lessonType === "quiz") {
+        updates.content = {
+          type: "quiz",
+          question: formData.quizQuestion,
+          options: formData.quizOptions,
+          explanation: formData.quizExplanation || undefined,
+        };
+      } else if (formData.lessonType === "theory") {
+        updates.content = {
+          type: "theory",
+          content: formData.theoryContent,
+          exampleCode: formData.exampleCode || undefined,
+          exampleDescription: formData.exampleDescription || undefined,
         };
       }
 
@@ -305,6 +335,197 @@ export default function LessonEditDialog({
                 </label>
               </div>
 
+              {/* Theory-specific fields */}
+              {formData.lessonType === "theory" && (
+                <>
+                  <div className="border-t pt-6">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                      Szczegóły teorii
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Treść lekcji *
+                        </label>
+                        <textarea
+                          value={formData.theoryContent}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              theoryContent: e.target.value,
+                            })
+                          }
+                          rows={8}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                          placeholder="Wpisz treść lekcji teoretycznej..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Przykładowy kod
+                        </label>
+                        <textarea
+                          value={formData.exampleCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              exampleCode: e.target.value,
+                            })
+                          }
+                          rows={5}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none font-mono text-sm resize-none"
+                          placeholder="# Przykładowy kod demonstracyjny"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Opis przykładowego kodu
+                        </label>
+                        <textarea
+                          value={formData.exampleDescription}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              exampleDescription: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                          placeholder="Wyjaśnienie działania przykładowego kodu"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Quiz-specific fields */}
+              {formData.lessonType === "quiz" && (
+                <>
+                  <div className="border-t pt-6">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                      Szczegóły quizu
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Pytanie quizowe *
+                        </label>
+                        <textarea
+                          value={formData.quizQuestion}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              quizQuestion: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                          placeholder="np. Co wyświetli poniższy kod?"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-sm font-medium text-slate-700">
+                            Opcje odpowiedzi *
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                quizOptions: [...formData.quizOptions, {text: "", isCorrect: false, explanation: ""}]
+                              });
+                            }}
+                            className="text-sm px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
+                          >
+                            + Dodaj opcję
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {formData.quizOptions.map((option, index) => (
+                            <div key={index} className="border rounded-lg p-4 bg-slate-50">
+                              <div className="flex gap-3 items-start">
+                                <input
+                                  type="checkbox"
+                                  checked={option.isCorrect}
+                                  onChange={(e) => {
+                                    const newOptions = [...formData.quizOptions];
+                                    newOptions[index].isCorrect = e.target.checked;
+                                    setFormData({...formData, quizOptions: newOptions});
+                                  }}
+                                  className="mt-3 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500"
+                                />
+                                <div className="flex-1 space-y-2">
+                                  <input
+                                    type="text"
+                                    value={option.text}
+                                    onChange={(e) => {
+                                      const newOptions = [...formData.quizOptions];
+                                      newOptions[index].text = e.target.value;
+                                      setFormData({...formData, quizOptions: newOptions});
+                                    }}
+                                    className="w-full px-3 py-2 rounded border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
+                                    placeholder="Treść odpowiedzi"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={option.explanation}
+                                    onChange={(e) => {
+                                      const newOptions = [...formData.quizOptions];
+                                      newOptions[index].explanation = e.target.value;
+                                      setFormData({...formData, quizOptions: newOptions});
+                                    }}
+                                    className="w-full px-3 py-2 rounded border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                                    placeholder="Wyjaśnienie (opcjonalne)"
+                                  />
+                                </div>
+                                {formData.quizOptions.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newOptions = formData.quizOptions.filter((_, i) => i !== index);
+                                      setFormData({...formData, quizOptions: newOptions});
+                                    }}
+                                    className="text-red-600 hover:text-red-800 p-2"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Ogólne wyjaśnienie
+                        </label>
+                        <textarea
+                          value={formData.quizExplanation}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              quizExplanation: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                          placeholder="Dodatkowe wyjaśnienie dla całego quizu"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
               {/* Exercise-specific fields */}
               {formData.lessonType === "exercise" && (
                 <>
@@ -352,7 +573,7 @@ export default function LessonEditDialog({
 
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">
-                          Rozwiązanie *
+                          Rozwiązanie
                         </label>
                         <textarea
                           value={formData.solution}
@@ -365,6 +586,42 @@ export default function LessonEditDialog({
                           rows={5}
                           className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none font-mono text-sm resize-none"
                           placeholder="print('Hello World')"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Przykładowy kod
+                        </label>
+                        <textarea
+                          value={formData.exampleCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              exampleCode: e.target.value,
+                            })
+                          }
+                          rows={5}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none font-mono text-sm resize-none"
+                          placeholder="# Przykładowy kod demonstracyjny"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Opis przykładowego kodu
+                        </label>
+                        <textarea
+                          value={formData.exampleDescription}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              exampleDescription: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                          placeholder="Wyjaśnienie działania przykładowego kodu"
                         />
                       </div>
 

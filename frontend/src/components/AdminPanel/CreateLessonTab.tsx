@@ -4,6 +4,7 @@ import { lessonService } from "../../services/LessonService";
 import {
   createExerciseContent,
   createQuizContent,
+  createTheoryContent,
 } from "../../utils/lessonHelpers";
 
 type AdminTab = "courses" | "lessons" | "create" | "create-course";
@@ -21,6 +22,7 @@ interface NewLessonData {
   expectedOutput: string;
   exampleCode: string;
   exampleDescription: string;
+  theoryContent: string;
   quizQuestion: string;
   quizExplanation: string;
   quizOptions: Array<{ text: string; isCorrect: boolean; explanation: string }>;
@@ -39,6 +41,7 @@ const initialNewLesson: NewLessonData = {
   expectedOutput: "",
   exampleCode: "",
   exampleDescription: "",
+  theoryContent: "",
   quizQuestion: "",
   quizExplanation: "",
   quizOptions: [
@@ -98,6 +101,12 @@ export default function CreateLessonTab({
           question: newLesson.quizQuestion,
           options: validOptions,
           explanation: newLesson.quizExplanation || undefined,
+        });
+      } else if (newLesson.lessonType === "theory") {
+        lessonContent = createTheoryContent({
+          content: newLesson.theoryContent || "",
+          exampleCode: newLesson.exampleCode,
+          exampleDescription: newLesson.exampleDescription,
         });
       } else {
         lessonContent = createExerciseContent({
@@ -309,6 +318,10 @@ export default function CreateLessonTab({
           <ExerciseFields newLesson={newLesson} setNewLesson={setNewLesson} />
         )}
 
+        {newLesson.lessonType === "theory" && (
+          <TheoryFields newLesson={newLesson} setNewLesson={setNewLesson} />
+        )}
+
         {newLesson.lessonType === "quiz" && (
           <QuizFields newLesson={newLesson} setNewLesson={setNewLesson} />
         )}
@@ -383,7 +396,7 @@ function ExerciseFields({ newLesson, setNewLesson }: ExerciseFieldsProps) {
 
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
-          Rozwiazanie *
+          Rozwiazanie
         </label>
         <textarea
           value={newLesson.solution}
@@ -393,7 +406,6 @@ function ExerciseFields({ newLesson, setNewLesson }: ExerciseFieldsProps) {
               solution: e.target.value,
             })
           }
-          required
           rows={5}
           className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none font-mono text-sm resize-none"
           placeholder="print('Hello World')"
@@ -603,6 +615,79 @@ function QuizFields({ newLesson, setNewLesson }: QuizFieldsProps) {
           className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
           placeholder="Wyjasnienie ktore pojawi sie po udzieleniu odpowiedzi"
         />
+      </div>
+    </>
+  );
+}
+
+interface TheoryFieldsProps {
+  newLesson: NewLessonData;
+  setNewLesson: (lesson: NewLessonData) => void;
+}
+
+function TheoryFields({ newLesson, setNewLesson }: TheoryFieldsProps) {
+  return (
+    <>
+      <div className="border-t pt-6">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">
+          Szczegóły teorii
+        </h3>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Treść lekcji *
+            </label>
+            <textarea
+              value={newLesson.theoryContent}
+              onChange={(e) =>
+                setNewLesson({
+                  ...newLesson,
+                  theoryContent: e.target.value,
+                })
+              }
+              rows={8}
+              className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+              placeholder="Wpisz treść lekcji teoretycznej..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Przykładowy kod
+            </label>
+            <textarea
+              value={newLesson.exampleCode}
+              onChange={(e) =>
+                setNewLesson({
+                  ...newLesson,
+                  exampleCode: e.target.value,
+                })
+              }
+              rows={5}
+              className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none font-mono text-sm resize-none"
+              placeholder="# Przykładowy kod demonstracyjny"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Opis przykładowego kodu
+            </label>
+            <textarea
+              value={newLesson.exampleDescription}
+              onChange={(e) =>
+                setNewLesson({
+                  ...newLesson,
+                  exampleDescription: e.target.value,
+                })
+              }
+              rows={2}
+              className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+              placeholder="Wyjaśnienie działania przykładowego kodu"
+            />
+          </div>
+        </div>
       </div>
     </>
   );

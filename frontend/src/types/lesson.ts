@@ -7,14 +7,17 @@ interface CodeBlock {
 
 interface TheoryLesson {
   type: "theory";
-  blocks: CodeBlock[];
+  content: string;
+  exampleCode?: string;
+  exampleDescription?: string;
+  examples?: string[];
 }
 
 interface ExerciseLesson {
   type: "exercise";
   instruction: string;
   starterCode: string;
-  solution: string;
+  solution?: string;
   hint?: string;
   exampleCode?: string;
   exampleDescription?: string;

@@ -21,18 +21,31 @@ export const getNextLessonId = (
   lessonId: string,
 ): string | undefined => {
   for (const course of courses) {
-    for (const module of course.modules) {
+    for (let moduleIndex = 0; moduleIndex < course.modules.length; moduleIndex++) {
+      const module = course.modules[moduleIndex];
       const lessonIndex = module.lessons.findIndex(
         (lesson) => lesson.id === lessonId,
       );
+      
       if (lessonIndex !== -1) {
+        // Check if there's a next lesson in current module
         const nextLesson = module.lessons[lessonIndex + 1];
         if (nextLesson) {
           return nextLesson.id;
         }
+        
+        // Check if there's a next module
+        const nextModule = course.modules[moduleIndex + 1];
+        if (nextModule && nextModule.lessons.length > 0) {
+          return nextModule.lessons[0].id;
+        }
+        
+        // No more lessons - course completed!
+        return "course-complete";
       }
     }
   }
+  return undefined;
 };
 
 export const findCourseByLessonId = (

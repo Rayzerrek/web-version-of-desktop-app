@@ -33,17 +33,18 @@ export function createExerciseContent(data: {
   };
 }
 
-export function createTheoryContent(
-  blocks: Array<{
-    type: "text" | "code" | "tip" | "warning" | "info";
-    content: string;
-    language?: string;
-    code?: string;
-  }>,
-): TheoryLesson {
+export function createTheoryContent(data: {
+  content: string;
+  exampleCode?: string;
+  exampleDescription?: string;
+  examples?: string[];
+}): TheoryLesson {
   return {
     type: "theory",
-    blocks,
+    content: data.content,
+    exampleCode: data.exampleCode,
+    exampleDescription: data.exampleDescription,
+    examples: data.examples,
   };
 }
 

@@ -145,7 +145,7 @@ export class LessonService {
     return apiFetch<Lesson>(`/lessons/${encodeURIComponent(lessonId)}`, {
       method: "PUT",
       headers: authHeaders(token),
-      body: JSON.stringify({ updates }),
+      body: JSON.stringify(updates),
     });
   }
 
@@ -166,7 +166,7 @@ export class LessonService {
     return apiFetch<Course>(`/courses/${encodeURIComponent(courseId)}`, {
       method: "PUT",
       headers: authHeaders(token),
-      body: JSON.stringify({ updates }),
+      body: JSON.stringify(updates),
     });
   }
 
@@ -183,7 +183,7 @@ export class LessonService {
     return apiFetch<Module>(`/modules/${encodeURIComponent(moduleId)}`, {
       method: "PUT",
       headers: authHeaders(token),
-      body: JSON.stringify({ updates }),
+      body: JSON.stringify(updates),
     });
   }
 

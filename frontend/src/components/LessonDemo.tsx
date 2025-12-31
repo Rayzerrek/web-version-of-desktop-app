@@ -119,7 +119,20 @@ export default function LessonDemo({
         setOutput(result.error);
         setIsCorrect(false);
       } else {
-        setOutput(result.output);
+        // Friendly message for correct code
+        if (result.is_correct) {
+          const successMessages = [
+            "✅ Doskonała robota! Kod działa prawidłowo.",
+            "🎉 Wspaniale! Wszystko się zgadza.",
+            "✨ Perfekcyjnie! Kod został wykonany poprawnie.",
+            "🎯 Celnie! Twój kod działa bez zarzutu.",
+            "🚀 Świetnie! Kod działa zgodnie z oczekiwaniami."
+          ];
+          const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+          setOutput(result.output ? `${randomMessage}\n\n${result.output}` : randomMessage);
+        } else {
+          setOutput(result.output);
+        }
         setIsCorrect(result.is_correct);
 
         if (result.is_correct) {
@@ -128,7 +141,7 @@ export default function LessonDemo({
           if (userId) {
             try {
               await progressService.markLessonCompleted(userId, lessonId);
-              console.log("Lesson marked as completed");
+              console.log("✅ Lekcja ukończona!");
             } catch (error) {
               console.error("Error saving progress:", error);
             }
@@ -152,11 +165,14 @@ export default function LessonDemo({
     const courses = await lessonService.getCourses();
     const nextId = getNextLessonId(courses, lessonId);
 
-    if (nextId) {
+    if (nextId === "course-complete") {
+      console.log("Course completed! Showing completion screen");
+      onNextLesson?.("course-complete");
+    } else if (nextId) {
       console.log("Next lesson:", nextId);
       onNextLesson?.(nextId);
     } else {
-      console.log("This is the last lesson!");
+      console.log("No next lesson found!");
     }
   };
 
@@ -168,6 +184,108 @@ export default function LessonDemo({
         onNextLesson={handleNextLesson}
         lessonId={lessonId}
       />
+    );
+  }
+
+  // Theory lesson view - no code editor, just content display
+  if (lesson.content.type === "theory") {
+    const theoryContent = lesson.content as any;
+    
+    return (
+      <>
+        <LessonSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          onNextLesson={handleNextLesson}
+          xpReward={lesson.xpReward}
+          lessonTitle={lesson.title}
+        />
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-3">
+                <span className="font-medium">{course?.title || "Kurs"}</span>
+                <span className="text-slate-400 dark:text-slate-500">
+                  {String.fromCharCode(8250)}
+                </span>
+                <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-semibold">
+                  Lekcja {lesson.orderIndex}
+                </span>
+              </div>
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+                {lesson.title}
+              </h1>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                  📚 Teoria
+                </h2>
+                <div className="prose prose-lg dark:prose-invert max-w-none">
+                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    {theoryContent.content || lesson.description}
+                  </p>
+                </div>
+              </div>
+
+              {theoryContent.exampleCode && (
+                <div className="bg-slate-900 dark:bg-slate-950 rounded-2xl p-5 border border-slate-700">
+                  {theoryContent.exampleDescription && (
+                    <div className="mb-4 pb-3 border-b border-slate-700">
+                      <p className="text-sm text-slate-300 leading-relaxed">
+                        {theoryContent.exampleDescription}
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span className="text-xs text-slate-400 font-medium ml-2">
+                      Przykładowy kod
+                    </span>
+                  </div>
+                  <pre className="text-green-400 font-mono text-sm leading-relaxed overflow-x-auto">
+                    <code>{theoryContent.exampleCode}</code>
+                  </pre>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between bg-amber-400 rounded-2xl p-5 shadow-lg">
+                <span className="text-white font-semibold">
+                  Nagroda za ukończenie
+                </span>
+                <span className="text-3xl font-bold text-white">
+                  +{lesson.xpReward} XP
+                </span>
+              </div>
+
+              <button
+                onClick={async () => {
+                  // Mark theory lesson as completed
+                  const userId = localStorage.getItem("user_id");
+                  if (userId) {
+                    try {
+                      await progressService.markLessonCompleted(userId, lessonId);
+                      console.log("✅ Lekcja ukończona!");
+                      setShowSuccessModal(true);
+                    } catch (error) {
+                      console.error("Error saving progress:", error);
+                      alert("Błąd podczas zapisywania postępu");
+                    }
+                  }
+                }}
+                className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                ✓ Ukończ lekcję
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
@@ -287,7 +405,8 @@ export default function LessonDemo({
                         <iframe
                           title="HTML Preview"
                           srcDoc={htmlPreview}
-                          className="w-full h-64 border border-slate-200 dark:border-slate-700 rounded-lg"
+                          className="w-full h-64 border border-slate-200 dark:border-slate-700 rounded-lg bg-white"
+                          style={{ backgroundColor: 'white' }}
                         ></iframe>
                       ) : (
                         <div className="text-slate-400 dark:text-slate-500 italic flex items-center gap-2">

@@ -55,6 +55,17 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
     }
   };
 
+  const handleDeleteLesson = async (lessonId: string) => {
+    try {
+      await lessonService.deleteLesson(lessonId);
+      alert("Lekcja usunieta pomyslnie!");
+      await loadCourses();
+    } catch (error) {
+      console.error("Error deleting lesson:", error);
+      alert("Blad podczas usuwania lekcji: " + error);
+    }
+  };
+
   const openEdit = (lessonId: string) => {
     setEditingLessonId(lessonId);
   };
@@ -91,6 +102,7 @@ export default function AdminPanel({ onBack }: AdminPanelProps) {
               courses={courses}
               loading={loading}
               onEditLesson={openEdit}
+              onDeleteLesson={handleDeleteLesson}
             />
           )}
 

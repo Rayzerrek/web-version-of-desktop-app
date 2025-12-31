@@ -7,14 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 class SupabaseClientSingleton:
-    """
-    Singleton manager for Supabase client instances.
-    
-    Maintains separate instances for regular and admin access.
-    """
     _instance: Optional[Client] = None
     _admin_instance: Optional[Client] = None
-    _lock = False  # Simple lock to prevent race conditions
+    _lock = False
 
     @classmethod
     def get_client(cls) -> Client:
