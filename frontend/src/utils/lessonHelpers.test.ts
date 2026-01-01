@@ -42,25 +42,29 @@ describe("lessonHelpers", () => {
   });
 
   describe("createTheoryContent", () => {
-    it("creates theory with multiple blocks", () => {
-      const result = createTheoryContent([
-        { type: "text", content: "Introduction" },
-        { type: "code", content: "const x = 5;", language: "javascript" },
-        { type: "tip", content: "Remember this!" },
-      ]);
+    it("creates theory with all fields", () => {
+      const result = createTheoryContent({
+        content: "Theory content",
+        exampleCode: "const x = 5;",
+        exampleDescription: "Example",
+        examples: ["Ex 1"],
+      });
 
       expect(result.type).toBe("theory");
-      expect(result.blocks).toHaveLength(3);
-      expect(result.blocks[0].type).toBe("text");
-      expect(result.blocks[1].type).toBe("code");
-      expect(result.blocks[2].type).toBe("tip");
+      expect(result.content).toBe("Theory content");
+      expect(result.exampleCode).toBe("const x = 5;");
+      expect(result.exampleDescription).toBe("Example");
+      expect(result.examples).toHaveLength(1);
     });
 
-    it("creates theory with empty blocks", () => {
-      const result = createTheoryContent([]);
+    it("creates theory without optional fields", () => {
+      const result = createTheoryContent({
+        content: "Basic theory",
+      });
 
       expect(result.type).toBe("theory");
-      expect(result.blocks).toHaveLength(0);
+      expect(result.content).toBe("Basic theory");
+      expect(result.exampleCode).toBeUndefined();
     });
   });
 

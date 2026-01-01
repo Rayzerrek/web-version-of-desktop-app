@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Lesson } from "../types/lesson";
+import type { Lesson, QuizOption } from "../types/lesson";
 import { lessonService } from "../services/LessonService";
 
 interface LessonEditDialogProps {
@@ -38,7 +38,9 @@ export default function LessonEditDialog({
     exampleDescription: "",
     theoryContent: "",
     quizQuestion: "",
-    quizOptions: [{text: "", isCorrect: false, explanation: ""}] as Array<{text: string, isCorrect: boolean, explanation: string}>,
+    quizOptions: [
+      { text: "", isCorrect: false, explanation: "" },
+    ] as QuizOption[],
     quizExplanation: "",
     isLocked: false,
     estimatedMinutes: 15,
@@ -70,20 +72,26 @@ export default function LessonEditDialog({
         language: data.language as any,
         lessonType: data.lessonType as any,
         xpReward: data.xpReward,
-        instruction: isExercise ? content.instruction : "",
-        starterCode: isExercise ? content.starterCode : "",
-        solution: isExercise ? content.solution : "",
-        hint: isExercise ? content.hint || "" : "",
+        instruction: isExercise ? (content as any).instruction || "" : "",
+        starterCode: isExercise ? (content as any).starterCode || "" : "",
+        solution: isExercise ? (content as any).solution || "" : "",
+        hint: isExercise ? (content as any).hint || "" : "",
         expectedOutput:
-          isExercise && content.testCases?.[0]
-            ? content.testCases[0].expectedOutput
+          isExercise && (content as any).testCases?.[0]
+            ? (content as any).testCases[0].expectedOutput
             : "",
-        exampleCode: (isExercise || isTheory) ? content.exampleCode || "" : "",
-        exampleDescription: (isExercise || isTheory) ? content.exampleDescription || "" : "",
-        theoryContent: isTheory ? content.content || "" : "",
-        quizQuestion: isQuiz ? content.question : "",
-        quizOptions: isQuiz ? content.options : [{text: "", isCorrect: false, explanation: ""}],
-        quizExplanation: isQuiz ? content.explanation || "" : "",
+        exampleCode:
+          isExercise || isTheory ? (content as any).exampleCode || "" : "",
+        exampleDescription:
+          isExercise || isTheory
+            ? (content as any).exampleDescription || ""
+            : "",
+        theoryContent: isTheory ? (content as any).content || "" : "",
+        quizQuestion: isQuiz ? (content as any).question || "" : "",
+        quizOptions: isQuiz
+          ? (content as any).options
+          : [{ text: "", isCorrect: false, explanation: "" }],
+        quizExplanation: isQuiz ? (content as any).explanation || "" : "",
         isLocked: data.isLocked || false,
         estimatedMinutes: data.estimatedMinutes || 15,
       });
@@ -439,7 +447,14 @@ export default function LessonEditDialog({
                             onClick={() => {
                               setFormData({
                                 ...formData,
-                                quizOptions: [...formData.quizOptions, {text: "", isCorrect: false, explanation: ""}]
+                                quizOptions: [
+                                  ...formData.quizOptions,
+                                  {
+                                    text: "",
+                                    isCorrect: false,
+                                    explanation: "",
+                                  },
+                                ],
                               });
                             }}
                             className="text-sm px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
@@ -447,18 +462,27 @@ export default function LessonEditDialog({
                             + Dodaj opcję
                           </button>
                         </div>
-                        
+
                         <div className="space-y-3">
                           {formData.quizOptions.map((option, index) => (
-                            <div key={index} className="border rounded-lg p-4 bg-slate-50">
+                            <div
+                              key={index}
+                              className="border rounded-lg p-4 bg-slate-50"
+                            >
                               <div className="flex gap-3 items-start">
                                 <input
                                   type="checkbox"
                                   checked={option.isCorrect}
                                   onChange={(e) => {
-                                    const newOptions = [...formData.quizOptions];
-                                    newOptions[index].isCorrect = e.target.checked;
-                                    setFormData({...formData, quizOptions: newOptions});
+                                    const newOptions = [
+                                      ...formData.quizOptions,
+                                    ];
+                                    newOptions[index].isCorrect =
+                                      e.target.checked;
+                                    setFormData({
+                                      ...formData,
+                                      quizOptions: newOptions,
+                                    });
                                   }}
                                   className="mt-3 w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500"
                                 />
@@ -467,9 +491,14 @@ export default function LessonEditDialog({
                                     type="text"
                                     value={option.text}
                                     onChange={(e) => {
-                                      const newOptions = [...formData.quizOptions];
+                                      const newOptions = [
+                                        ...formData.quizOptions,
+                                      ];
                                       newOptions[index].text = e.target.value;
-                                      setFormData({...formData, quizOptions: newOptions});
+                                      setFormData({
+                                        ...formData,
+                                        quizOptions: newOptions,
+                                      });
                                     }}
                                     className="w-full px-3 py-2 rounded border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
                                     placeholder="Treść odpowiedzi"
@@ -478,9 +507,15 @@ export default function LessonEditDialog({
                                     type="text"
                                     value={option.explanation}
                                     onChange={(e) => {
-                                      const newOptions = [...formData.quizOptions];
-                                      newOptions[index].explanation = e.target.value;
-                                      setFormData({...formData, quizOptions: newOptions});
+                                      const newOptions = [
+                                        ...formData.quizOptions,
+                                      ];
+                                      newOptions[index].explanation =
+                                        e.target.value;
+                                      setFormData({
+                                        ...formData,
+                                        quizOptions: newOptions,
+                                      });
                                     }}
                                     className="w-full px-3 py-2 rounded border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none text-sm"
                                     placeholder="Wyjaśnienie (opcjonalne)"
@@ -490,8 +525,14 @@ export default function LessonEditDialog({
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      const newOptions = formData.quizOptions.filter((_, i) => i !== index);
-                                      setFormData({...formData, quizOptions: newOptions});
+                                      const newOptions =
+                                        formData.quizOptions.filter(
+                                          (_, i) => i !== index,
+                                        );
+                                      setFormData({
+                                        ...formData,
+                                        quizOptions: newOptions,
+                                      });
                                     }}
                                     className="text-red-600 hover:text-red-800 p-2"
                                   >
