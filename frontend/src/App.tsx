@@ -22,8 +22,6 @@ import type {
 import type { Course } from "./types/lesson";
 import "./styles/App.css";
 
-
-
 function App() {
   const { isAuthenticated, isAdmin, refreshAdmin, login, logout } = useAuth();
   const [currentView, setCurrentView] = useState<
@@ -67,7 +65,7 @@ function App() {
         {
           method: "GET",
           headers: authHeaders(token || ""),
-        }
+        },
       );
 
       if (response && !response.onboarding_completed) {
@@ -84,11 +82,6 @@ function App() {
   const handleCourseSelect = async (courseId: string) => {
     console.log("Selected course ID:", courseId);
 
-    if (courseId === selectedCourseId) {
-      setCurrentView("dashboard");
-      return;
-    }
-
     setSelectedCourseId(courseId);
 
     try {
@@ -104,27 +97,38 @@ function App() {
         if (userId) {
           try {
             const userProgress = await progressService.getUserProgress(userId);
-            console.log("📊 User progress:", userProgress);
-            console.log("📚 Total completed lessons:", userProgress.filter(p => p.status === "completed").length);
-            
-            // Find first incomplete lesson
+            console.log(" User progress:", userProgress);
+            console.log(
+              " Total completed lessons:",
+              userProgress.filter((p) => p.status === "completed").length,
+            );
+
             let found = false;
             for (const module of course.modules) {
               console.log("🔍 Checking module:", module.title);
               for (const lesson of module.lessons) {
-                const progressEntry = userProgress.find(p => p.lesson_id === lesson.id);
+                const progressEntry = userProgress.find(
+                  (p) => p.lesson_id === lesson.id,
+                );
                 const isCompleted = progressEntry?.status === "completed";
-                console.log(`  📝 Lesson: ${lesson.title} (${lesson.id}) - Status: ${progressEntry?.status || "not_started"} - Completed: ${isCompleted}`);
+                console.log(
+                  `  📝 Lesson: ${lesson.title} (${lesson.id}) - Status: ${progressEntry?.status || "not_started"} - Completed: ${isCompleted}`,
+                );
                 if (!isCompleted) {
                   targetLessonId = lesson.id;
-                  console.log("✅ Found first incomplete lesson:", lesson.title, "ID:", lesson.id);
+                  console.log(
+                    "✅ Found first incomplete lesson:",
+                    lesson.title,
+                    "ID:",
+                    lesson.id,
+                  );
                   found = true;
                   break;
                 }
               }
               if (found) break;
             }
-            
+
             if (!found) {
               console.log("All lessons completed, starting from first lesson");
             }
@@ -143,7 +147,8 @@ function App() {
     } catch (error) {
       console.error("Error loading course:", error);
       setToast({
-        message: "Błąd ładowania kursu",
+        message:
+          "Wystąpił problem z załadowaniem kursu. Spróbuj ponownie później.",
         type: "error",
       });
     }
@@ -171,7 +176,7 @@ function App() {
 
   const handleOnboardingComplete = (
     recommendation: OnboardingRecommendation,
-    answers: OnboardingAnswers
+    answers: OnboardingAnswers,
   ) => {
     setOnboardingData({ recommendation, answers });
     setCurrentView("onboarding-demo");
@@ -182,7 +187,7 @@ function App() {
       try {
         const courses = await lessonService.getCourses();
         const recommendedCourse = courses.find(
-          (course) => course.id === onboardingData.recommendation?.courseId
+          (course) => course.id === onboardingData.recommendation?.courseId,
         );
         if (recommendedCourse) {
           await handleCourseSelect(recommendedCourse.id);
@@ -263,6 +268,7 @@ function App() {
         <Button
           onClick={() => {
             setCurrentView("dashboard");
+            setSelectedCourseId("");
           }}
           variant="secondary"
           size="sm"
@@ -274,19 +280,25 @@ function App() {
           lessonId={selectedLessonId}
           onNextLesson={async (nextLessonId) => {
             console.log("App - Setting next lesson:", nextLessonId);
-            
+
             // Check if this is the last lesson
             if (nextLessonId === "course-complete") {
               // Course completed! Show completion screen
               const courses = await lessonService.getCourses();
               const course = courses.find((c) => c.id === selectedCourseId);
-              
+
               if (course) {
                 // Calculate total XP from all lessons
-                const totalXp = course.modules.reduce((sum, module) => 
-                  sum + module.lessons.reduce((lessonSum, lesson) => 
-                    lessonSum + lesson.xpReward, 0), 0);
-                
+                const totalXp = course.modules.reduce(
+                  (sum, module) =>
+                    sum +
+                    module.lessons.reduce(
+                      (lessonSum, lesson) => lessonSum + lesson.xpReward,
+                      0,
+                    ),
+                  0,
+                );
+
                 setCompletedCourse(course);
                 setTotalXpEarned(totalXp);
                 setCurrentView("course-completion");
