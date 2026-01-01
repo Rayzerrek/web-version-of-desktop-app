@@ -1,34 +1,51 @@
 interface HtmlCssPreviewProps {
   html: string;
   css?: string;
+  js?: string;
 }
 
 export default function HtmlCssPreview({
   html = "",
   css = "",
+  js = "",
 }: HtmlCssPreviewProps) {
-  const document = `
+  const documentContent = `
         <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
-    </head>
-    <body>
         <style>
             ${css}
         </style>
-        ${html}        
+    </head>
+    <body>
+        ${html}
+
+        <script>
+            // Przechwytywanie błędów i wysyłanie ich do konsoli nadrzędnej
+            window.onerror = function(message, source, lineno, colno, error) {
+                console.error("DOM Script Error:", message);
+                return false;
+            };
+
+            try {
+                ${js}
+            } catch (err) {
+                console.error("Execution Error:", err.message);
+            }
+        </script>
     </body>
     </html>
     `;
+
   return (
     <iframe
-      title="HTML CSS Preview"
+      title="HTML CSS JS Preview"
       sandbox="allow-scripts allow-same-origin"
       style={{ width: "100%", height: "100%", border: "none" }}
-      srcDoc={document}
+      srcDoc={documentContent}
     />
   );
 }

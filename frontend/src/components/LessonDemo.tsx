@@ -105,11 +105,24 @@ export default function LessonDemo({
         setHtmlPreview(code);
       }
 
+      // Check if code uses DOM APIs to avoid errors in Node.js backend
+      const isDOMInteraction =
+        lesson.language === "javascript" &&
+        (code.includes("document.") ||
+          code.includes("window.") ||
+          code.includes("addEventListener"));
+
+      if (isDOMInteraction) {
+        setHtmlPreview(code);
+      }
+
       const result = await apiFetch<CodeValidationResponse>(`/validate_code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          code,
+          code: isDOMInteraction
+            ? `const document = { getElementById: () => ({ addEventListener: () => {}, style: {}, innerHTML: "" }), querySelector: () => ({ addEventListener: () => {}, style: {}, innerHTML: "" }), body: { style: {} }, createElement: () => ({ style: {}, appendChild: () => {} }) }; const window = { addEventListener: () => {} }; ${code}`
+            : code,
           language: lesson.language,
           expectedOutput,
         }),
@@ -126,10 +139,15 @@ export default function LessonDemo({
             "🎉 Wspaniale! Wszystko się zgadza.",
             "✨ Perfekcyjnie! Kod został wykonany poprawnie.",
             "🎯 Celnie! Twój kod działa bez zarzutu.",
-            "🚀 Świetnie! Kod działa zgodnie z oczekiwaniami."
+            "🚀 Świetnie! Kod działa zgodnie z oczekiwaniami.",
           ];
-          const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
-          setOutput(result.output ? `${randomMessage}\n\n${result.output}` : randomMessage);
+          const randomMessage =
+            successMessages[Math.floor(Math.random() * successMessages.length)];
+          setOutput(
+            result.output
+              ? `${randomMessage}\n\n${result.output}`
+              : randomMessage,
+          );
         } else {
           setOutput(result.output);
         }
@@ -190,7 +208,7 @@ export default function LessonDemo({
   // Theory lesson view - no code editor, just content display
   if (lesson.content.type === "theory") {
     const theoryContent = lesson.content as any;
-    
+
     return (
       <>
         <LessonSuccessModal
@@ -269,7 +287,10 @@ export default function LessonDemo({
                   const userId = localStorage.getItem("user_id");
                   if (userId) {
                     try {
-                      await progressService.markLessonCompleted(userId, lessonId);
+                      await progressService.markLessonCompleted(
+                        userId,
+                        lessonId,
+                      );
                       console.log("✅ Lekcja ukończona!");
                       setShowSuccessModal(true);
                     } catch (error) {
@@ -406,7 +427,7 @@ export default function LessonDemo({
                           title="HTML Preview"
                           srcDoc={htmlPreview}
                           className="w-full h-64 border border-slate-200 dark:border-slate-700 rounded-lg bg-white"
-                          style={{ backgroundColor: 'white' }}
+                          style={{ backgroundColor: "white" }}
                         ></iframe>
                       ) : (
                         <div className="text-slate-400 dark:text-slate-500 italic flex items-center gap-2">
