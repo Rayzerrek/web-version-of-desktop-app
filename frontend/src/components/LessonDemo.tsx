@@ -105,7 +105,6 @@ export default function LessonDemo({
         setHtmlPreview(code);
       }
 
-      // Check if code uses DOM APIs to avoid errors in Node.js backend
       const isDOMInteraction =
         lesson.language === "javascript" &&
         (code.includes("document.") ||
@@ -121,7 +120,57 @@ export default function LessonDemo({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: isDOMInteraction
-            ? `const document = { getElementById: () => ({ addEventListener: () => {}, style: {}, innerHTML: "" }), querySelector: () => ({ addEventListener: () => {}, style: {}, innerHTML: "" }), body: { style: {} }, createElement: () => ({ style: {}, appendChild: () => {} }) }; const window = { addEventListener: () => {} }; ${code}`
+            ? `
+            const __mockEl = {
+              addEventListener: () => {},
+              removeEventListener: () => {},
+              style: {},
+              innerHTML: "",
+              textContent: "",
+              value: "",
+              appendChild: (el) => el,
+              classList: { add: () => {}, remove: () => {}, toggle: () => {} }
+            };
+            const document = {
+              getElementById: () => __mockEl,
+              querySelector: () => __mockEl,
+              querySelectorAll: () => [__mockEl],
+              body: __mockEl,
+              createElement: () => __mockEl,
+              addEventListener: () => {}
+            };
+            const window = { addEventListener: () => {}, document };
+            // Define variables used in code that might be missing (like 'b' from ID)
+            ${(code.match(/[a-zA-Z_$][0-9a-zA-Z_$]*/g) || [])
+              .filter((v, i, a) => a.indexOf(v) === i)
+              .filter(
+                (v) =>
+                  ![
+                    "const",
+                    "let",
+                    "var",
+                    "function",
+                    "if",
+                    "else",
+                    "for",
+                    "while",
+                    "return",
+                    "true",
+                    "false",
+                    "null",
+                    "undefined",
+                    "document",
+                    "window",
+                    "console",
+                  ].includes(v),
+              )
+              .map(
+                (v) =>
+                  `var ${v} = typeof ${v} !== 'undefined' ? ${v} : __mockEl;`,
+              )
+              .join("\n")}
+            ${code}
+            `
             : code,
           language: lesson.language,
           expectedOutput,
@@ -132,8 +181,46 @@ export default function LessonDemo({
         setOutput(result.error);
         setIsCorrect(false);
       } else {
+        let isCorrect = result.is_correct;
+
+        // Dodatkowa weryfikacja logiczna (opcjonalna - sprawdzenie czy kod nie jest zbyt uproszczony)
+        if (
+          isCorrect &&
+          lesson.content.type === "exercise" &&
+          lesson.content.solution
+        ) {
+          const normalizedCode = code.replace(/\s+/g, "").toLowerCase();
+          const normalizedSolution = lesson.content.solution
+            .replace(/\s+/g, "")
+            .toLowerCase();
+
+          // Jeśli rozwiązanie zawiera warunek, a kod użytkownika nie (lub ma inny),
+          // to sprawdzamy czy kluczowe elementy logiki są obecne.
+          const logicKeywords = [
+            "if",
+            "else",
+            "for",
+            "while",
+            ">",
+            "<",
+            "==",
+            "===",
+            "!=",
+          ];
+          for (const word of logicKeywords) {
+            if (
+              normalizedSolution.includes(word) &&
+              !normalizedCode.includes(word)
+            ) {
+              isCorrect = false;
+              result.output = `Twój kod działa dla tego przypadku, ale brakuje w nim wymaganej logiki (np. użycia '${word}').`;
+              break;
+            }
+          }
+        }
+
         // Friendly message for correct code
-        if (result.is_correct) {
+        if (isCorrect) {
           const successMessages = [
             "✅ Doskonała robota! Kod działa prawidłowo.",
             "🎉 Wspaniale! Wszystko się zgadza.",
@@ -149,12 +236,14 @@ export default function LessonDemo({
               : randomMessage,
           );
         } else {
-          setOutput(result.output);
+          setOutput(
+            result.output ||
+              "Wynik nie zgadza się z oczekiwanym lub brakuje wymaganej logiki.",
+          );
         }
-        setIsCorrect(result.is_correct);
+        setIsCorrect(isCorrect);
 
-        if (result.is_correct) {
-          // Mark lesson as completed
+        if (isCorrect) {
           const userId = localStorage.getItem("user_id");
           if (userId) {
             try {
