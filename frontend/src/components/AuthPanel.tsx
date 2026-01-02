@@ -145,7 +145,6 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
       setLoading(false);
     }
   };
-
   return (
     <>
       {toast && (
@@ -220,9 +219,11 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
             </div>
 
             <button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-4 border-2 border-slate-200 dark:border-slate-600 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+              onClick={() => {
+                handleGoogleLogin();
+              }}
+              disabled={true}
+              className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-4 border-2 border-slate-200 dark:border-slate-600 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:border-slate-200 dark:disabled:border-slate-600 disabled:text-slate-400 dark:disabled:text-slate-500"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
