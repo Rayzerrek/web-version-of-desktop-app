@@ -4,7 +4,6 @@ const interestOptions = [
   { value: "python", label: "Backend i analiza danych" },
   { value: "javascript/typescript", label: "Tworzenie stron internetowych" },
   { value: "html", label: "Projektowanie stron" },
-  { value: "css", label: "Projektowanie stron" },
   { value: "not-sure", label: "Jeszcze nie wiem" },
 ];
 

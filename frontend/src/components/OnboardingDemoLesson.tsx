@@ -2,6 +2,7 @@ import { useState } from "react";
 import CodeEditor from "./CodeEditor";
 import ButtonComponent from "./common/ButtonComponent";
 import { apiFetch, authHeaders } from "../services/ApiClient";
+import HtmlCssPreview from "./HtmlCssPreview";
 import type {
   OnboardingRecommendation,
   OnboardingAnswers,
@@ -37,13 +38,6 @@ const DEMO_CONTENT: Record<
     title: "Wypróbuj HTML",
     instruction:
       "W HTML budujesz strukturę strony. Zmień tekst w nagłówku <h1>.",
-  },
-  css: {
-    language: "css",
-    code: "/* Dodaj kolory do swojej strony */\nbody {\n  background-color: #f0f9ff;\n}\nh1 {\n  color: #1d4ed8;\n  text-align: center;\n}",
-    title: "Wypróbuj CSS",
-    instruction:
-      "CSS odpowiada za wygląd. Spróbuj zmienić kolor (np. na 'red').",
   },
   default: {
     language: "python",
@@ -125,15 +119,12 @@ export const OnboardingDemoLesson = ({
               <p className="text-blue-900 dark:text-blue-300">
                 <strong>Twoja ścieżka:</strong> {recommendation.coursePath}
               </p>
-              <p className="text-blue-800 dark:text-blue-400 text-sm mt-1">
-                {recommendation.message}
-              </p>
             </div>
           )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 h-fit">
             <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
               Instrukcje
             </h2>
@@ -150,50 +141,61 @@ export const OnboardingDemoLesson = ({
               </p>
             </div>
 
-            {!isRunning && (
-              <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                <h3 className="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">
-                  Wskazówka
-                </h3>
-                <p className="text-yellow-800 dark:text-yellow-400 text-sm">
-                  Upewnij się, że używasz poprawnej składni Pythona. W Pythonie
-                  wcięcia są ważne!
-                </p>
-              </div>
-            )}
-
-            <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <h3 className="font-semibold text-green-900 dark:text-green-300 mb-2">
+            <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <h3 className="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">
                 Wskazówka
               </h3>
-              <p className="text-green-800 dark:text-green-400 text-sm">
+              <p className="text-yellow-800 dark:text-yellow-400 text-sm">
                 Każda lekcja w kursie ma podobną strukturę: instrukcje po lewej,
                 kod po prawej. Ucz się w swoim tempie!
               </p>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-              Edytor kodu
-            </h2>
-            <CodeEditor
-              initialCode={code}
-              language={content.language}
-              onChange={setCode}
-              onRun={handleRunCode}
-            />
-            <ButtonComponent
-              onClick={handleReset}
-              variant="secondary"
-              size="small"
-            >
-              Zresetuj kod
-            </ButtonComponent>
-            {output && (
-              <div className="mt-4 p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm overflow-auto max-h-48">
-                <div className="text-xs text-gray-500 mb-2">Output:</div>
-                <pre className="whitespace-pre-wrap">{output}</pre>
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                Edytor kodu
+              </h2>
+              <CodeEditor
+                initialCode={code}
+                language={content.language}
+                onChange={setCode}
+                onRun={handleRunCode}
+              />
+              <div className="mt-4">
+                <ButtonComponent
+                  onClick={handleReset}
+                  variant="secondary"
+                  size="small"
+                >
+                  Zresetuj kod
+                </ButtonComponent>
+              </div>
+
+              {output && content.language !== "html" && (
+                <div className="mt-4 p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm overflow-auto max-h-48">
+                  <div className="text-xs text-gray-500 mb-2">Output:</div>
+                  <pre className="whitespace-pre-wrap">{output}</pre>
+                </div>
+              )}
+            </div>
+
+            {content.language === "html" && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 h-[400px] flex flex-col">
+                <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                  Podgląd na żywo
+                </h2>
+                <div className="flex-1 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white">
+                  <HtmlCssPreview
+                    html={
+                      content.language === "html"
+                        ? code
+                        : "<h1>Witaj, Świecie!</h1><p>CSS zmienia wygląd tej strony.</p>"
+                    }
+                    css={""}
+                  />
+                </div>
               </div>
             )}
           </div>
