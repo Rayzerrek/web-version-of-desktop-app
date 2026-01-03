@@ -27,6 +27,7 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
     experience: null,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleInterestSelect = (interest: string) => {
     setAnswers({
@@ -52,6 +53,7 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
 
   const handleComplete = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const token = localStorage.getItem("access_token");
       const response = await apiFetch<OnboardingRecommendation>(
@@ -66,8 +68,12 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
       if (response) {
         onComplete(response, answers);
       }
-    } catch (error) {
-      console.error("Error completing onboarding:", error);
+    } catch (err: any) {
+      console.error("Error completing onboarding:", err);
+      setError(
+        err.message ||
+          "Wystąpił błąd podczas zapisywania Twoich preferencji. Spróbuj ponownie.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -191,6 +197,12 @@ export const OnBoardingQuiz = ({ onComplete, onSkip }: OnBoardingQuizProps) => {
                 {getFinalMessage(answers)}
               </p>
             </div>
+
+            {error && (
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm mb-4">
+                {error}
+              </div>
+            )}
 
             <ButtonComponent
               onClick={handleComplete}

@@ -294,7 +294,6 @@ export default function LessonDemo({
     );
   }
 
-  // Theory lesson view - no code editor, just content display
   if (lesson.content.type === "theory") {
     const theoryContent = lesson.content as any;
 

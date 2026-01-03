@@ -2,20 +2,68 @@ import { useState } from "react";
 import CodeEditor from "./CodeEditor";
 import ButtonComponent from "./common/ButtonComponent";
 import { apiFetch, authHeaders } from "../services/ApiClient";
-import type { OnboardingRecommendation } from "../types/onboarding";
+import type {
+  OnboardingRecommendation,
+  OnboardingAnswers,
+} from "../types/onboarding";
 
 interface OnboardingDemoLessonProps {
   recommendation?: OnboardingRecommendation;
+  interest?: OnboardingAnswers["interest"];
   onFinish: () => void;
 }
 
+const DEMO_CONTENT: Record<
+  string,
+  { language: string; code: string; title: string; instruction: string }
+> = {
+  python: {
+    language: "python",
+    code: '# Witaj! Wpisz swój pierwszy kod w Pythonie\nprint("Witaj, Świecie!")',
+    title: "Wypróbuj Pythona",
+    instruction:
+      'Kliknij przycisk "Uruchom kod", aby wykonać swój pierwszy skrypt w Pythonie.',
+  },
+  "javascript/typescript": {
+    language: "javascript",
+    code: '// Witaj w JavaScript!\nconsole.log("Witaj, Świecie!");',
+    title: "Wypróbuj JavaScript",
+    instruction:
+      'Kliknij przycisk "Uruchom kod", aby zobaczyć wynik działania JavaScript.',
+  },
+  html: {
+    language: "html",
+    code: "<!-- Stwórz nagłówek w HTML -->\n<h1>Witaj, Świecie!</h1>\n<p>To jest Twój pierwszy element HTML.</p>",
+    title: "Wypróbuj HTML",
+    instruction:
+      "W HTML budujesz strukturę strony. Zmień tekst w nagłówku <h1>.",
+  },
+  css: {
+    language: "css",
+    code: "/* Dodaj kolory do swojej strony */\nbody {\n  background-color: #f0f9ff;\n}\nh1 {\n  color: #1d4ed8;\n  text-align: center;\n}",
+    title: "Wypróbuj CSS",
+    instruction:
+      "CSS odpowiada za wygląd. Spróbuj zmienić kolor (np. na 'red').",
+  },
+  default: {
+    language: "python",
+    code: '# Witaj! Wpisz swój pierwszy kod w Pythonie\nprint("Witaj, Świecie!")',
+    title: "Wypróbuj swoją pierwszą lekcję",
+    instruction:
+      "To jest Twój edytor kodu. Spróbuj uruchomić kod, a następnie zmodyfikuj go i uruchom ponownie!",
+  },
+};
+
 export const OnboardingDemoLesson = ({
   recommendation,
+  interest,
   onFinish,
 }: OnboardingDemoLessonProps) => {
-  const [code, setCode] = useState(
-    '# Witaj! Wpisz swój pierwszy kod w Pythonie\nprint("Witaj, Świecie!")',
-  );
+  const content =
+    interest && DEMO_CONTENT[interest]
+      ? DEMO_CONTENT[interest]
+      : DEMO_CONTENT.default;
+  const [code, setCode] = useState(content.code);
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
 
@@ -23,10 +71,14 @@ export const OnboardingDemoLesson = ({
     setIsRunning(true);
     try {
       const token = localStorage.getItem("access_token");
-      const response = await apiFetch("/services/execute", {
+      const response = await apiFetch("/validate_code", {
         method: "POST",
         headers: authHeaders(token || ""),
-        body: JSON.stringify({ code: codeToRun, language: "python" }),
+        body: JSON.stringify({
+          code: codeToRun,
+          language: content.language,
+          expectedOutput: "",
+        }),
       });
 
       setOutput(
@@ -40,9 +92,7 @@ export const OnboardingDemoLesson = ({
   };
 
   const handleReset = () => {
-    setCode(
-      '# Witaj! Wpisz swój pierwszy kod w Pythonie\nprint("Witaj, Świecie!")',
-    );
+    setCode(content.code);
     setOutput("");
   };
 
@@ -65,10 +115,10 @@ export const OnboardingDemoLesson = ({
       <div className="max-w-6xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
           <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
-            Wypróbuj swoją pierwszą lekcję
+            {content.title}
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            To jest Twój edytor kodu. Spróbuj uruchomić kod, a następnie zmodyfikuj go i uruchom ponownie!
+            {content.instruction}
           </p>
           {recommendation && (
             <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -89,12 +139,14 @@ export const OnboardingDemoLesson = ({
             </h2>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                1. Kliknij przycisk <strong>"Uruchom kod"</strong>, aby wykonać swój kod
+                1. Kliknij przycisk <strong>"Uruchom kod"</strong>, aby wykonać
+                swój kod
               </p>
               <p>2. Spróbuj zmienić wiadomość w cudzysłowie</p>
               <p>3. Uruchom ponownie, aby zobaczyć zmiany</p>
               <p>
-                4. Kliknij <strong>"Zresetuj"</strong>, jeśli chcesz zacząć od nowa
+                4. Kliknij <strong>"Zresetuj"</strong>, jeśli chcesz zacząć od
+                nowa
               </p>
             </div>
 
@@ -104,7 +156,8 @@ export const OnboardingDemoLesson = ({
                   Wskazówka
                 </h3>
                 <p className="text-yellow-800 dark:text-yellow-400 text-sm">
-                  Upewnij się, że używasz poprawnej składni Pythona. W Pythonie wcięcia są ważne!
+                  Upewnij się, że używasz poprawnej składni Pythona. W Pythonie
+                  wcięcia są ważne!
                 </p>
               </div>
             )}
@@ -114,7 +167,8 @@ export const OnboardingDemoLesson = ({
                 Wskazówka
               </h3>
               <p className="text-green-800 dark:text-green-400 text-sm">
-                Każda lekcja w kursie ma podobną strukturę: instrukcje po lewej, kod po prawej. Ucz się w swoim tempie!
+                Każda lekcja w kursie ma podobną strukturę: instrukcje po lewej,
+                kod po prawej. Ucz się w swoim tempie!
               </p>
             </div>
           </div>
@@ -125,15 +179,17 @@ export const OnboardingDemoLesson = ({
             </h2>
             <CodeEditor
               initialCode={code}
-              language="python"
+              language={content.language}
               onChange={setCode}
               onRun={handleRunCode}
             />
-            <ButtonComponent 
-            onClick={handleReset}
-            variant="secondary"
-            size="small"
-            >Zresetuj kod</ButtonComponent>
+            <ButtonComponent
+              onClick={handleReset}
+              variant="secondary"
+              size="small"
+            >
+              Zresetuj kod
+            </ButtonComponent>
             {output && (
               <div className="mt-4 p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm overflow-auto max-h-48">
                 <div className="text-xs text-gray-500 mb-2">Output:</div>
