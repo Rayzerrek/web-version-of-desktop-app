@@ -93,11 +93,6 @@ export const OnboardingDemoLesson = ({
     }
   };
 
-  const handleReset = () => {
-    setCode(content.code);
-    setOutput("");
-  };
-
   const handleFinish = async () => {
     try {
       const token = localStorage.getItem("access_token");
