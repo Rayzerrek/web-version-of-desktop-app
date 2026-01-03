@@ -114,6 +114,13 @@ export const OnboardingDemoLesson = ({
           <p className="text-gray-600 dark:text-gray-300">
             {content.instruction}
           </p>
+          {recommendation && (
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-blue-900 dark:text-blue-300">
+                <strong>Twoja ścieżka:</strong> {recommendation.coursePath}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
