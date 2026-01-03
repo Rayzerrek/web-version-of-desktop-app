@@ -39,6 +39,13 @@ const DEMO_CONTENT: Record<
     instruction:
       "W HTML budujesz strukturę strony. Zmień tekst w nagłówku <h1>.",
   },
+  css: {
+    language: "css",
+    code: "/* Dodaj kolory do swojej strony */\nbody {\n  background-color: #f0f9ff;\n}\nh1 {\n  color: #1d4ed8;\n  text-align: center;\n}",
+    title: "Wypróbuj CSS",
+    instruction:
+      "CSS odpowiada za wygląd. Spróbuj zmienić kolor (np. na 'red').",
+  },
   default: {
     language: "python",
     code: '# Witaj! Wpisz swój pierwszy kod w Pythonie\nprint("Witaj, Świecie!")',
@@ -57,6 +64,7 @@ export const OnboardingDemoLesson = ({
     interest && DEMO_CONTENT[interest]
       ? DEMO_CONTENT[interest]
       : DEMO_CONTENT.default;
+
   const [code, setCode] = useState(content.code);
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
@@ -119,6 +127,9 @@ export const OnboardingDemoLesson = ({
               <p className="text-blue-900 dark:text-blue-300">
                 <strong>Twoja ścieżka:</strong> {recommendation.coursePath}
               </p>
+              <p className="text-blue-800 dark:text-blue-400 text-sm mt-1">
+                {recommendation.message}
+              </p>
             </div>
           )}
         </div>
@@ -133,11 +144,11 @@ export const OnboardingDemoLesson = ({
                 1. Kliknij przycisk <strong>"Uruchom kod"</strong>, aby wykonać
                 swój kod
               </p>
-              <p>2. Spróbuj zmienić wiadomość w cudzysłowie</p>
+              <p>2. Spróbuj zmienić tekst w edytorze</p>
               <p>3. Uruchom ponownie, aby zobaczyć zmiany</p>
               <p>
-                4. Kliknij <strong>"Zresetuj"</strong>, jeśli chcesz zacząć od
-                nowa
+                4. Kliknij przycisk <strong>"Resetuj"</strong> wewnątrz edytora,
+                aby zacząć od nowa
               </p>
             </div>
 
@@ -158,30 +169,23 @@ export const OnboardingDemoLesson = ({
                 Edytor kodu
               </h2>
               <CodeEditor
-                initialCode={code}
+                value={code}
                 language={content.language}
                 onChange={setCode}
                 onRun={handleRunCode}
               />
-              <div className="mt-4">
-                <ButtonComponent
-                  onClick={handleReset}
-                  variant="secondary"
-                  size="small"
-                >
-                  Zresetuj kod
-                </ButtonComponent>
-              </div>
 
-              {output && content.language !== "html" && (
-                <div className="mt-4 p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm overflow-auto max-h-48">
-                  <div className="text-xs text-gray-500 mb-2">Output:</div>
-                  <pre className="whitespace-pre-wrap">{output}</pre>
-                </div>
-              )}
+              {output &&
+                content.language !== "html" &&
+                content.language !== "css" && (
+                  <div className="mt-4 p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm overflow-auto max-h-48">
+                    <div className="text-xs text-gray-500 mb-2">Output:</div>
+                    <pre className="whitespace-pre-wrap">{output}</pre>
+                  </div>
+                )}
             </div>
 
-            {content.language === "html" && (
+            {(content.language === "html" || content.language === "css") && (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 h-[400px] flex flex-col">
                 <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
                   Podgląd na żywo
@@ -193,7 +197,7 @@ export const OnboardingDemoLesson = ({
                         ? code
                         : "<h1>Witaj, Świecie!</h1><p>CSS zmienia wygląd tej strony.</p>"
                     }
-                    css={""}
+                    css={content.language === "css" ? code : ""}
                   />
                 </div>
               </div>

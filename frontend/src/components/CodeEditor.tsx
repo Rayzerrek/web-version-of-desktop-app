@@ -5,6 +5,7 @@ import ButtonComponent from "./common/ButtonComponent";
 
 interface CodeEditorProps {
   initialCode?: string;
+  value?: string;
   language?: string;
   onChange?: (value: string) => void;
   onRun?: (code: string) => void;
@@ -15,6 +16,7 @@ interface CodeEditorProps {
 
 export default function CodeEditor({
   initialCode = "",
+  value,
   language = "python",
   onChange,
   onRun,
@@ -25,9 +27,11 @@ export default function CodeEditor({
   const [code, setCode] = useState(initialCode);
   const [isRunning, setIsRunning] = useState(false);
 
-  const handleEditorChange = (value: string | undefined) => {
-    const newCode = value || "";
-    setCode(newCode);
+  const handleEditorChange = (newValue: string | undefined) => {
+    const newCode = newValue || "";
+    if (value === undefined) {
+      setCode(newCode);
+    }
     onChange?.(newCode);
   };
 
@@ -35,14 +39,16 @@ export default function CodeEditor({
     if (!onRun) return;
     setIsRunning(true);
     try {
-      onRun(code);
+      onRun(value !== undefined ? value : code);
     } finally {
       setIsRunning(false);
     }
   };
 
   const handleReset = () => {
-    setCode(initialCode);
+    if (value === undefined) {
+      setCode(initialCode);
+    }
     onChange?.(initialCode);
   };
 
@@ -95,7 +101,7 @@ export default function CodeEditor({
         <Editor
           height={height}
           language={language}
-          value={code}
+          value={value !== undefined ? value : code}
           onChange={handleEditorChange}
           theme={theme}
           options={{
