@@ -51,7 +51,7 @@ export function exampleConditionalLogging(isSuccess: boolean) {
 }
 
 // Helper do pokazywania toastów (przykład)
-function showToast(message: string, type: 'info' | 'error' | 'success') {
+function showToast(_message: string, _type: 'info' | 'error' | 'success') {
   // Implementacja toasta
 }
 
