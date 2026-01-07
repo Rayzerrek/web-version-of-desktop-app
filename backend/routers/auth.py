@@ -89,5 +89,31 @@ async def google_sign_in():
 
 
 @router.get("/check_admin")
-async def check_is_admin(user = Depends(require_admin)):
-    return {"isAdmin": True}
+async def check_is_admin(token: str = Depends(get_access_token)):
+    from supabase_client import get_supabase
+    from constants import ADMIN_ROLES
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    supabase = get_supabase()
+    
+    try:
+        user_response = supabase.auth.get_user(token)
+        if not user_response or not user_response.user:
+            return {"isAdmin": False}
+        
+        user_id = user_response.user.id
+        profile_response = supabase.table("profiles")\
+            .select("role")\
+            .eq("id", user_id)\
+            .execute()
+        
+        if not profile_response.data:
+            return {"isAdmin": False}
+        
+        role = profile_response.data[0].get("role", "")
+        return {"isAdmin": role in ADMIN_ROLES}
+        
+    except Exception as e:
+        logger.error(f"Error checking admin status: {str(e)}")
+        return {"isAdmin": False}
