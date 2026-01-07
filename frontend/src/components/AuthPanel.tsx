@@ -77,7 +77,6 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
         });
         logger.log("User logged in successfully. User ID:", response.user_id);
 
-        // Use the saveAuthTokens function with rememberMe flag
         saveAuthTokens(
           {
             access_token: response.access_token,
@@ -126,14 +125,13 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
         });
         logger.log("User registered successfully. User ID:", response.user_id);
 
-        // Save tokens using the auth utility (default to rememberMe=true for registration)
         saveAuthTokens(
           {
             access_token: response.access_token,
             refresh_token: response.refresh_token,
             user_id: response.user_id,
           },
-          true // Default to remembering for new registrations
+          true
         );
 
         setTimeout(() => {
@@ -160,6 +158,15 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
   };
   return (
     <>
+    <style>
+      {
+        `
+          :root {
+            overflow:hidden;
+          }
+        `
+      }
+    </style>
       {toast && (
         <Toast
           message={toast.message}
@@ -167,9 +174,9 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           onClose={() => setToast(null)}
         />
       )}
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-800  flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-2">
         <div
-          className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md p-8"
+          className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md p-7"
           style={{
             boxShadow:
               "0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08)",
