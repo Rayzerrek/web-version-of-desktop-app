@@ -20,10 +20,13 @@ export class LessonService {
       return Array.from(this.cache.values());
     }
 
+    // Courses are public - token is optional
     const token = localStorage.getItem("access_token");
+    const headers = token ? authHeaders(token) : { "Content-Type": "application/json" };
+    
     const rawCourses = await apiFetch<any[]>(`/courses`, {
       method: "GET",
-      headers: authHeaders(token ?? undefined),
+      headers: headers,
     });
 
     const courses: Course[] = (rawCourses || []).map((c: any) => {
@@ -62,12 +65,15 @@ export class LessonService {
   }
 
   async getLessonById(lessonId: string): Promise<Lesson | null> {
-    const token = this.getTokenOrThrow();
+    // Lessons are public - token is optional
+    const token = localStorage.getItem("access_token");
+    const headers = token ? authHeaders(token) : { "Content-Type": "application/json" };
+    
     const lesson = await apiFetch<Lesson>(
       `/lessons/${encodeURIComponent(lessonId)}`,
       {
         method: "GET",
-        headers: authHeaders(token),
+        headers: headers,
       },
     );
     return lesson;

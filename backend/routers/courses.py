@@ -1,6 +1,6 @@
 """Course management routes"""
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List
+from typing import List, Optional
 from models import CourseCreate, CourseUpdate, CourseResponse
 from supabase_client import get_supabase, get_admin_supabase
 from utils import get_access_token, require_admin, handle_supabase_error
@@ -10,8 +10,8 @@ router = APIRouter(prefix="/courses", tags=["Courses"])
 
 
 @router.get("", response_model=List[CourseResponse])
-async def get_all_courses(token: str = Depends(get_access_token)):
-    """Get all published courses with modules and lessons"""
+async def get_all_courses():
+    """Get all published courses with modules and lessons - public endpoint"""
     try:
         supabase = get_supabase()
         response = supabase.table("courses") \
@@ -26,8 +26,8 @@ async def get_all_courses(token: str = Depends(get_access_token)):
 
 
 @router.get("/{course_id}", response_model=CourseResponse)
-async def get_course(course_id: str, token: str = Depends(get_access_token)):
-    """Get single course with modules and lessons"""
+async def get_course(course_id: str):
+    """Get single course with modules and lessons - public endpoint"""
     try:
         supabase = get_supabase()
         response = supabase.table("courses") \

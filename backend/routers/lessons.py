@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
 from models import LessonCreate, LessonUpdate, LessonResponse
 from supabase_client import get_supabase, get_admin_supabase
 from utils import get_access_token, require_admin, handle_supabase_error
@@ -8,11 +9,8 @@ router = APIRouter(prefix="/lessons", tags=["Lessons"])
 
 
 @router.get("/{lesson_id}", response_model=LessonResponse)
-async def get_lesson_by_id(
-    lesson_id: str,
-    token: str = Depends(get_access_token)
-):
-    """Get single lesson by ID"""
+async def get_lesson_by_id(lesson_id: str):
+    """Get single lesson by ID - public endpoint"""
     try:
         supabase = get_supabase()
         response = supabase.table("lessons") \

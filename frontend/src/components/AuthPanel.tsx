@@ -109,7 +109,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
   const handleRegister = async (
     email: string,
     password: string,
-    username: string,
+    username: string
   ) => {
     setLoading(true);
     try {
@@ -232,17 +232,6 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
             </div>
 
             <button
-              onClick={handleGuestLogin}
-              disabled={loading}
-              className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-4 border-2 border-purple-200 dark:border-purple-600 rounded-2xl hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-purple-700 dark:text-purple-300 font-medium"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span>Kontynuuj jako gość</span>
-            </button>
-
-            <button
               onClick={() => {
                 handleGoogleLogin();
               }}
@@ -270,6 +259,11 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
               <span className="font-medium text-slate-700 dark:text-slate-200">
                 Kontynuuj z Google
               </span>
+            </button>
+          </div>
+          <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            <button onClick={handleGuestLogin} disabled={loading} className="cursor-pointer hover:underline hover:text-slate-700 dark:hover:text-slate-200 font-medium">
+              <span>Zaloguj się jako gość</span>
             </button>
           </div>
 
