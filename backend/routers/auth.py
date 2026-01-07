@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models import UserLogin, RegisterRequest, AuthResponse
 from supabase_client import get_supabase
-from utils import create_auth_response, require_admin
+from utils import create_auth_response, require_admin, get_access_token
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
