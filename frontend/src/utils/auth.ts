@@ -17,10 +17,23 @@ function saveAuthTokens(tokens: Tokens) {
 }
 
 function clearAuthTokens() {
+  // Clear all possible auth-related items from localStorage
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("user_id");
+  
+  // Also clear any cached admin status or user data
+  // This ensures no state leaks between users
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.startsWith("user_") || key.startsWith("auth_") || key.includes("admin"))) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(key => localStorage.removeItem(key));
 }
+
 function isAuthenticated(): boolean {
   return !!localStorage.getItem("access_token");
 }
