@@ -26,7 +26,7 @@ from routers import (
 )
 from routers.onboarding import router as onboarding_router
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if settings.is_development else logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
@@ -46,8 +46,8 @@ app = FastAPI(
     title=API_TITLE,
     version=API_VERSION,
     description="Backend API for interactive coding courses",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url="/docs" if not settings.is_production else None,
+    redoc_url="/redoc" if not settings.is_production else None,
     lifespan=lifespan
 )
 
@@ -97,14 +97,26 @@ async def global_exception_handler(request: Request, exc: Exception):
         }
     )
     
-    return JSONResponse(
-        status_code=500,
-        content={
-            "success": False,
-            "message": "Internal server error",
-            "detail": str(exc) if settings.environment == "development" else None
-        }
-    )
+    # On production: hide all error details for security
+    # On development: show full error info for debugging
+    if settings.is_production:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "message": "Wystąpił błąd serwera. Spróbuj ponownie później."
+            }
+        )
+    else:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "message": "Internal server error",
+                "detail": str(exc),
+                "type": type(exc).__name__
+            }
+        )
 
 
 
@@ -122,14 +134,21 @@ app.include_router(onboarding_router)
 @app.get("/")
 async def root():
     """API information endpoint"""
-    return {
+    base_info = {
         "name": API_TITLE,
         "version": API_VERSION,
-        "status": "running",
-        "environment": settings.environment,
-        "docs": "/docs",
-        "redoc": "/redoc"
+        "status": "running"
     }
+    
+    # Only show detailed info in development
+    if not settings.is_production:
+        base_info.update({
+            "environment": settings.environment,
+            "docs": "/docs",
+            "redoc": "/redoc"
+        })
+    
+    return base_info
 
 
 @app.get("/health")

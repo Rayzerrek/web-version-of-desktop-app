@@ -3,6 +3,7 @@ import { apiFetch, authHeaders } from "../services/ApiClient";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import Toast, { type ToastType } from "./Toast";
+import { logger } from "../utils/logger";
 
 interface AuthResponse {
   success: boolean;
@@ -62,7 +63,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           message: response.message,
           type: "success",
         });
-        console.log("User ID:", response.user_id);
+        logger.log("User logged in successfully. User ID:", response.user_id);
 
         if (response.access_token) {
           localStorage.setItem("access_token", response.access_token);
@@ -111,7 +112,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
           message: response.message,
           type: "success",
         });
-        console.log("User ID:", response.user_id);
+        logger.log("User registered successfully. User ID:", response.user_id);
 
         if (response.access_token) {
           localStorage.setItem("access_token", response.access_token);
