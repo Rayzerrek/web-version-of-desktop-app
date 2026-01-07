@@ -13,19 +13,17 @@ export function useUserProfile() {
     async function fetchProfile() {
       const { isGuestMode } = await import("../utils/auth");
       
-      // Goście mają podstawowy profil
       if (isGuestMode()) {
         setProfile({
           id: "guest",
-          username: "Gość",
-          email: "guest@localhost",
-          level: 1,
+          email: '',
+          username: '',
+          avatar_url: '',
           total_xp: 0,
-          achievements: [],
-          courses_completed: 0,
-          lessons_completed: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          level: 1,
+          current_streak_days: 0,
+          longest_streak_days: 0,
+          joined_at: new Date().toISOString(),
         });
         setLoading(false);
         return;
