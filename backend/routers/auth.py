@@ -2,7 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from models import UserLogin, RegisterRequest, AuthResponse
 from supabase_client import get_supabase
 from utils import create_auth_response, require_admin, get_access_token
+import logging
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -29,6 +31,7 @@ async def login_user(request: UserLogin):
                 message="Błąd logowania"
             )
     except Exception as e:
+        logger.warning(f"Login attempt failed for email: {request.email[:3]}*** - {type(e).__name__}")
         return create_auth_response(
             success=False,
             message="Nieprawidłowy email lub hasło"

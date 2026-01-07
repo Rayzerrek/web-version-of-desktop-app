@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import { apiFetch, authHeaders } from "../services/ApiClient";
-import { isAuthenticated as isAuth, clearAuthTokens } from "../utils/auth";
+import { isAuthenticated as isAuth, clearAuthTokens, getAccessToken } from "../utils/auth";
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(isAuth());
@@ -13,7 +13,7 @@ export function useAuth() {
       return;
     }
     
-    const token = localStorage.getItem("access_token");
+    const token = getAccessToken();
     if (!token) {
       setIsAdmin(false);
       return;

@@ -4,24 +4,51 @@ type Tokens = {
   user_id?: string;
 };
 
-function saveAuthTokens(tokens: Tokens) {
+function getStorage(rememberMe: boolean = true): Storage {
+  return rememberMe ? localStorage : sessionStorage;
+}
+
+function saveAuthTokens(tokens: Tokens, rememberMe: boolean = true) {
+  const storage = getStorage(rememberMe);
+  
   if (tokens.access_token) {
-    localStorage.setItem("access_token", tokens.access_token);
+    storage.setItem("access_token", tokens.access_token);
+    // Also clear from the other storage to avoid conflicts
+    if (rememberMe) {
+      sessionStorage.removeItem("access_token");
+    } else {
+      localStorage.removeItem("access_token");
+    }
   }
   if (tokens.refresh_token) {
-    localStorage.setItem("refresh_token", tokens.refresh_token);
+    storage.setItem("refresh_token", tokens.refresh_token);
+    if (rememberMe) {
+      sessionStorage.removeItem("refresh_token");
+    } else {
+      localStorage.removeItem("refresh_token");
+    }
   }
   if (tokens.user_id) {
-    localStorage.setItem("user_id", tokens.user_id);
+    storage.setItem("user_id", tokens.user_id);
+    if (rememberMe) {
+      sessionStorage.removeItem("user_id");
+    } else {
+      localStorage.removeItem("user_id");
+    }
   }
 }
 
 function clearAuthTokens() {
-  // Clear all possible auth-related items from localStorage
+  // Clear all possible auth-related items from both storages
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("user_id");
   localStorage.removeItem("guest_mode");
+  
+  sessionStorage.removeItem("access_token");
+  sessionStorage.removeItem("refresh_token");
+  sessionStorage.removeItem("user_id");
+  sessionStorage.removeItem("guest_mode");
   
   // Also clear any cached admin status or user data
   // This ensures no state leaks between users
@@ -32,7 +59,10 @@ function clearAuthTokens() {
       keysToRemove.push(key);
     }
   }
-  keysToRemove.forEach(key => localStorage.removeItem(key));
+  keysToRemove.forEach(key => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
 }
 
 function setGuestMode() {
@@ -43,8 +73,33 @@ function isGuestMode(): boolean {
   return localStorage.getItem("guest_mode") === "true";
 }
 
-function isAuthenticated(): boolean {
-  return !!localStorage.getItem("access_token") || isGuestMode();
+function getAccessToken(): string | null {
+  // Check localStorage first, then sessionStorage
+  return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
 }
 
-export { saveAuthTokens, clearAuthTokens, isAuthenticated, setGuestMode, isGuestMode };
+function getRefreshToken(): string | null {
+  return localStorage.getItem("refresh_token") || sessionStorage.getItem("refresh_token");
+}
+
+function getUserId(): string | null {
+  return localStorage.getItem("user_id") || sessionStorage.getItem("user_id");
+}
+
+function isAuthenticated(): boolean {
+  // Check both localStorage and sessionStorage for tokens
+  const hasLocalToken = !!localStorage.getItem("access_token");
+  const hasSessionToken = !!sessionStorage.getItem("access_token");
+  return hasLocalToken || hasSessionToken || isGuestMode();
+}
+
+export { 
+  saveAuthTokens, 
+  clearAuthTokens, 
+  isAuthenticated, 
+  setGuestMode, 
+  isGuestMode,
+  getAccessToken,
+  getRefreshToken,
+  getUserId
+};

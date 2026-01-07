@@ -4,7 +4,7 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import Toast, { type ToastType } from "./Toast";
 import { logger } from "../utils/logger";
-import { setGuestMode } from "../utils/auth";
+import { setGuestMode, saveAuthTokens } from "../utils/auth";
 
 interface AuthResponse {
   success: boolean;
@@ -61,7 +61,7 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
     }
   };
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string, rememberMe: boolean = false) => {
     setLoading(true);
     try {
       const response = await apiFetch<AuthResponse>(`/auth/login`, {
@@ -77,15 +77,15 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
         });
         logger.log("User logged in successfully. User ID:", response.user_id);
 
-        if (response.access_token) {
-          localStorage.setItem("access_token", response.access_token);
-        }
-        if (response.refresh_token) {
-          localStorage.setItem("refresh_token", response.refresh_token);
-        }
-        if (response.user_id) {
-          localStorage.setItem("user_id", response.user_id);
-        }
+        // Use the saveAuthTokens function with rememberMe flag
+        saveAuthTokens(
+          {
+            access_token: response.access_token,
+            refresh_token: response.refresh_token,
+            user_id: response.user_id,
+          },
+          rememberMe
+        );
 
         setTimeout(() => {
           onLoginSuccess?.();
@@ -126,15 +126,15 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
         });
         logger.log("User registered successfully. User ID:", response.user_id);
 
-        if (response.access_token) {
-          localStorage.setItem("access_token", response.access_token);
-        }
-        if (response.refresh_token) {
-          localStorage.setItem("refresh_token", response.refresh_token);
-        }
-        if (response.user_id) {
-          localStorage.setItem("user_id", response.user_id);
-        }
+        // Save tokens using the auth utility (default to rememberMe=true for registration)
+        saveAuthTokens(
+          {
+            access_token: response.access_token,
+            refresh_token: response.refresh_token,
+            user_id: response.user_id,
+          },
+          true // Default to remembering for new registrations
+        );
 
         setTimeout(() => {
           if (response.access_token) {
