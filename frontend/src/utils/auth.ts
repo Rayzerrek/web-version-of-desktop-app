@@ -21,6 +21,7 @@ function clearAuthTokens() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("user_id");
+  localStorage.removeItem("guest_mode");
   
   // Also clear any cached admin status or user data
   // This ensures no state leaks between users
@@ -34,8 +35,16 @@ function clearAuthTokens() {
   keysToRemove.forEach(key => localStorage.removeItem(key));
 }
 
-function isAuthenticated(): boolean {
-  return !!localStorage.getItem("access_token");
+function setGuestMode() {
+  localStorage.setItem("guest_mode", "true");
 }
 
-export { saveAuthTokens, clearAuthTokens, isAuthenticated };
+function isGuestMode(): boolean {
+  return localStorage.getItem("guest_mode") === "true";
+}
+
+function isAuthenticated(): boolean {
+  return !!localStorage.getItem("access_token") || isGuestMode();
+}
+
+export { saveAuthTokens, clearAuthTokens, isAuthenticated, setGuestMode, isGuestMode };

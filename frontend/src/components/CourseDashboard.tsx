@@ -39,6 +39,14 @@ export default function CourseDashboard({
 
   const loadProgress = async () => {
     try {
+      const { isGuestMode } = await import("../utils/auth");
+      
+      // Goście nie mają zapisanego postępu
+      if (isGuestMode()) {
+        setUserProgress([]);
+        return;
+      }
+      
       const userId = localStorage.getItem("user_id");
       if (userId) {
         const progress = await progressService.getUserProgress(userId);

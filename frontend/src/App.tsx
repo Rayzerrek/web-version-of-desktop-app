@@ -58,6 +58,14 @@ function App() {
   }, [isAuthenticated, refreshAdmin, currentView]);
 
   const checkOnboardingStatus = async () => {
+    const { isGuestMode } = await import("./utils/auth");
+    
+    // Goście pomijają onboarding i idą prosto do dashboard
+    if (isGuestMode()) {
+      setCurrentView("dashboard");
+      return;
+    }
+    
     try {
       const token = localStorage.getItem("access_token");
       const response = await apiFetch<{ onboarding_completed: boolean }>(

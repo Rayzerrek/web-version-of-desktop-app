@@ -4,6 +4,7 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import Toast, { type ToastType } from "./Toast";
 import { logger } from "../utils/logger";
+import { setGuestMode } from "../utils/auth";
 
 interface AuthResponse {
   success: boolean;
@@ -24,6 +25,17 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
     message: string;
     type: ToastType;
   } | null>(null);
+
+  const handleGuestLogin = () => {
+    setGuestMode();
+    setToast({
+      message: "Zalogowano jako gość. Postęp nie będzie zapisywany.",
+      type: "info",
+    });
+    setTimeout(() => {
+      onLoginSuccess?.();
+    }, 1000);
+  };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -218,6 +230,17 @@ export default function AuthPanel({ onLoginSuccess }: AuthPanelProps) {
                 </span>
               </div>
             </div>
+
+            <button
+              onClick={handleGuestLogin}
+              disabled={loading}
+              className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-4 border-2 border-purple-200 dark:border-purple-600 rounded-2xl hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-purple-700 dark:text-purple-300 font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>Kontynuuj jako gość</span>
+            </button>
 
             <button
               onClick={() => {

@@ -11,6 +11,26 @@ export function useUserProfile() {
 
   useEffect(() => {
     async function fetchProfile() {
+      const { isGuestMode } = await import("../utils/auth");
+      
+      // Goście mają podstawowy profil
+      if (isGuestMode()) {
+        setProfile({
+          id: "guest",
+          username: "Gość",
+          email: "guest@localhost",
+          level: 1,
+          total_xp: 0,
+          achievements: [],
+          courses_completed: 0,
+          lessons_completed: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+        setLoading(false);
+        return;
+      }
+      
       if (isAuthenticated) {
         const userId = localStorage.getItem("user_id");
         if (!userId) {
