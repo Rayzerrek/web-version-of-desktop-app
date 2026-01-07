@@ -192,11 +192,6 @@ function App() {
         if (recommendedCourse) {
           await handleCourseSelect(recommendedCourse.id);
         } else {
-          setToast({
-            message:
-              "Nie znaleziono rekomendowanego kursu. Zapraszamy do przejrzenia katalogu!",
-            type: "info",
-          });
           setCurrentView("dashboard");
         }
       } catch (error) {
