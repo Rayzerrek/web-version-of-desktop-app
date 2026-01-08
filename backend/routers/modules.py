@@ -38,7 +38,6 @@ async def update_module(
 ):
     try:
         supabase = get_admin_supabase()
-        # Use by_alias=True to convert camelCase to snake_case for database
         raw_data = {k: v for k, v in updates.model_dump(by_alias=True).items() if v is not None}
         
         response = supabase.table("modules") \
