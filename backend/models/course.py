@@ -9,7 +9,6 @@ Language = Literal["python", "javascript", "typescript", "html", "css", "java"]
 LessonType = Literal["theory", "exercise", "quiz", "project"]
 
 
-# Base config for models that need camelCase -> snake_case conversion for DB
 snake_case_config = ConfigDict(
     populate_by_name=True,
     alias_generator=AliasGenerator(

@@ -1,6 +1,3 @@
-"""
-FastAPI dependency injection functions for authentication and authorization.
-"""
 from fastapi import Header, HTTPException, Depends, status
 from supabase import Client
 from supabase_client import get_supabase

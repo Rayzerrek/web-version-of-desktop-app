@@ -35,7 +35,6 @@ async def create_lesson(
 ):
     try:
         supabase = get_admin_supabase()
-        # Use by_alias=True to convert camelCase to snake_case for database
         lesson_data = lesson.model_dump(by_alias=True)
         response = supabase.table("lessons").insert(lesson_data).execute()
         
@@ -57,7 +56,6 @@ async def update_lesson(
 ):
     try:
         supabase = get_admin_supabase()
-        # Use by_alias=True to convert camelCase to snake_case for database
         raw_data = {k: v for k, v in updates.model_dump(by_alias=True).items() if v is not None}
         
         response = supabase.table("lessons") \

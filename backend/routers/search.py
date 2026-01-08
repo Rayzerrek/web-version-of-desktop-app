@@ -24,14 +24,12 @@ async def search_content(
 ):
     """Search courses and lessons"""
     try:
-        # Validate query using Pydantic
         query_obj = SearchQuery(query=q)
         query = query_obj.query
 
         supabase = get_supabase()
         results = []
 
-        # Search courses
         courses_response = (
             supabase.table("courses")
             .select("id, title, description")
@@ -53,7 +51,6 @@ async def search_content(
                 )
             )
 
-        # Search lessons
         lessons_response = (
             supabase.table("lessons")
             .select(
@@ -93,12 +90,6 @@ async def search_content(
 
 @router.post("/validate_code", response_model=CodeValidationResponse)
 async def validate_code(request: CodeValidationRequest):
-    """
-    Validate and execute user code.
-
-    ⚠️ WARNING: This endpoint has security vulnerabilities!
-    Should be disabled in production or run in isolated Docker containers.
-    """
     try:
         if request.language == "python":
             return await code_executor.validate_python(

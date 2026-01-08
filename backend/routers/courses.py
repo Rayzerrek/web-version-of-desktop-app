@@ -53,7 +53,6 @@ async def create_course(
     """Create new course (admin only)"""
     try:
         supabase = get_admin_supabase()
-        # Use by_alias=True to convert camelCase to snake_case for database
         course_data = course.model_dump(by_alias=True)
         response = supabase.table("courses").insert(course_data).execute()
         
@@ -78,7 +77,6 @@ async def update_course(
     """Update course (admin only)"""
     try:
         supabase = get_admin_supabase()
-        # Use by_alias=True to convert camelCase to snake_case for database
         raw_data = {k: v for k, v in updates.model_dump(by_alias=True).items() if v is not None}
         
         response = supabase.table("courses") \
@@ -89,7 +87,6 @@ async def update_course(
         if not response.data:
             raise HTTPException(status_code=404, detail="Course not found")
         
-        # Fetch full course with relations
         full_response = supabase.table("courses") \
             .select("*, modules(*, lessons(*))") \
             .eq("id", course_id) \
