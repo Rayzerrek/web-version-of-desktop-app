@@ -142,7 +142,6 @@ function App() {
             }
           } catch (error) {
             console.error("Error loading progress:", error);
-            // Fall back to first lesson if progress loading fails
           }
         }
 
