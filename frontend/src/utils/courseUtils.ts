@@ -28,19 +28,16 @@ export const getNextLessonId = (
       );
       
       if (lessonIndex !== -1) {
-        // Check if there's a next lesson in current module
         const nextLesson = module.lessons[lessonIndex + 1];
         if (nextLesson) {
           return nextLesson.id;
         }
         
-        // Check if there's a next module
         const nextModule = course.modules[moduleIndex + 1];
         if (nextModule && nextModule.lessons.length > 0) {
           return nextModule.lessons[0].id;
         }
         
-        // No more lessons - course completed!
         return "course-complete";
       }
     }

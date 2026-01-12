@@ -89,22 +89,12 @@ export default function CourseCompletionScreen({
                 Zdobytych punktów XP
               </div>
             </div>
-
-            <div className="bg-blue-100 dark:bg-blue-900 rounded-2xl p-6">
-              <div className="text-4xl mb-2"></div>
-              <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
-                100%
-              </div>
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                Ukończenia kursu
-              </div>
-            </div>
           </div>
 
           <div className="bg-indigo-50 dark:bg-slate-700 rounded-2xl p-8 mb-8">
             <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed mb-4">
               Osiągnąłeś niesamowity sukces! Ukończyłeś wszystkie lekcje i
-              moduły tego kursu. To dowód Twojego zaangażowania, ciężkiej pracy
+              moduły z tego kursu. To dowód Twojego zaangażowania, ciężkiej pracy
               i determinacji.
             </p>
             <p className="text-lg text-slate-700 dark:text-slate-200 leading-relaxed">

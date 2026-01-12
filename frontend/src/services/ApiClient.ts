@@ -1,5 +1,4 @@
-export const API_BASE =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+export const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 async function handleResponse(response: Response) {
   const contentType = response.headers.get("content-type") || "";

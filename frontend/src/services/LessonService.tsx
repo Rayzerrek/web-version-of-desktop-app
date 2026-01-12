@@ -20,7 +20,6 @@ export class LessonService {
       return Array.from(this.cache.values());
     }
 
-    // Courses are public - token is optional
     const token = localStorage.getItem("access_token");
     const headers = token ? authHeaders(token) : { "Content-Type": "application/json" };
     
@@ -65,7 +64,6 @@ export class LessonService {
   }
 
   async getLessonById(lessonId: string): Promise<Lesson | null> {
-    // Lessons are public - token is optional
     const token = localStorage.getItem("access_token");
     const headers = token ? authHeaders(token) : { "Content-Type": "application/json" };
     

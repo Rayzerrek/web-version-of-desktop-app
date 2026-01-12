@@ -1,8 +1,3 @@
-/**
- * Production-safe logger
- * Automatically disables console logging in production builds
- */
-
 const isProduction = import.meta.env.PROD;
 
 export const logger = {
@@ -36,7 +31,5 @@ export const logger = {
     }
   }
 };
-
-// For development, export a function to check environment
 export const isDevelopment = () => !isProduction;
 export const isProductionBuild = () => isProduction;

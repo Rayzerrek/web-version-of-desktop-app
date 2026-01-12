@@ -1,0 +1,15 @@
+Adresy URL:
+
+Aplikacja: https://codemasterapp.vercel.app
+Strona internetowa: https://codemasterwebsite.vercel.app
+
+repozytorium Github:
+Aplikacja: 
+ https://github.com/Rayzerrek/web-version-of-desktop-app
+Strona internetowa: 
+ https://github.com/Rayzerrek/website
+
+1. Otwórz aplikację w przeglądarce (https://codemasterapp.vercel.app/)
+2. Zarejestruj nowe konto lub zaloguj się na istniejące.
+3. Po zalogowaniu zostaniesz przeniesiony do panelu głównego.
+

@@ -8,7 +8,6 @@ export function useAuth() {
   const adminCheckInProgress = useRef<boolean>(false);
   
   const refreshAdmin = useCallback(async () => {
-    // Prevent multiple simultaneous admin checks
     if (adminCheckInProgress.current) {
       return;
     }
@@ -26,10 +25,8 @@ export function useAuth() {
         method: "GET",
         headers: authHeaders(token),
       });
-      // Only set admin status if we got a clear positive response
       setIsAdmin(Boolean(res && res.isAdmin === true));
     } catch (error) {
-      // On any error, user is NOT admin
       setIsAdmin(false);
     } finally {
       adminCheckInProgress.current = false;
@@ -38,7 +35,6 @@ export function useAuth() {
 
   const login = useCallback(() => {
     setIsAuthenticated(true);
-    // Reset admin state before checking
     setIsAdmin(false);
     refreshAdmin();
   }, [refreshAdmin]);
@@ -55,7 +51,6 @@ export function useAuth() {
     if (isAuth()) {
       refreshAdmin();
     } else {
-      // If not authenticated, definitely not admin
       setIsAdmin(false);
     }
   }, [refreshAdmin]);

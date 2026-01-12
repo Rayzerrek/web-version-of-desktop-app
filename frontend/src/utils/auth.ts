@@ -13,7 +13,6 @@ function saveAuthTokens(tokens: Tokens, rememberMe: boolean = true) {
   
   if (tokens.access_token) {
     storage.setItem("access_token", tokens.access_token);
-    // Also clear from the other storage to avoid conflicts
     if (rememberMe) {
       sessionStorage.removeItem("access_token");
     } else {
@@ -39,7 +38,6 @@ function saveAuthTokens(tokens: Tokens, rememberMe: boolean = true) {
 }
 
 function clearAuthTokens() {
-  // Clear all possible auth-related items from both storages
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("user_id");
@@ -50,8 +48,6 @@ function clearAuthTokens() {
   sessionStorage.removeItem("user_id");
   sessionStorage.removeItem("guest_mode");
   
-  // Also clear any cached admin status or user data
-  // This ensures no state leaks between users
   const keysToRemove: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
@@ -74,7 +70,6 @@ function isGuestMode(): boolean {
 }
 
 function getAccessToken(): string | null {
-  // Check localStorage first, then sessionStorage
   return localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
 }
 
@@ -87,7 +82,6 @@ function getUserId(): string | null {
 }
 
 function isAuthenticated(): boolean {
-  // Check both localStorage and sessionStorage for tokens
   const hasLocalToken = !!localStorage.getItem("access_token");
   const hasSessionToken = !!sessionStorage.getItem("access_token");
   return hasLocalToken || hasSessionToken || isGuestMode();
