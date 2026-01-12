@@ -13,7 +13,7 @@ class Settings(BaseSettings):
         description="Backend"
     )
     cors_origins: str = Field(
-        default="https://web-version-app.vercel.app/",
+        default="https://codemastersapp.vercel.app/",
         description="Frontend"
     )
     
