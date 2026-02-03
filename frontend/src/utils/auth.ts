@@ -61,8 +61,20 @@ function clearAuthTokens() {
   });
 }
 
+function generateGuestUserId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return `guest_${crypto.randomUUID()}`;
+  }
+  return `guest_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function setGuestMode() {
   localStorage.setItem("guest_mode", "true");
+  const existingUserId = getUserId();
+  if (!existingUserId) {
+    localStorage.setItem("user_id", generateGuestUserId());
+    sessionStorage.removeItem("user_id");
+  }
 }
 
 function isGuestMode(): boolean {
