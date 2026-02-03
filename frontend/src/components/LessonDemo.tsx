@@ -194,6 +194,25 @@ export default function LessonDemo({
             .replace(/\s+/g, "")
             .toLowerCase();
 
+          const trimAndNormalizeSpaces = (value: string) =>
+            value.trim().replace(/\s+/g, " ");
+
+          const isCommentOnlySolution = (solutionText: string) => {
+            if (lesson.language === "python") {
+              return /^\s*#.+$/s.test(solutionText);
+            }
+            if (lesson.language === "javascript" || lesson.language === "typescript") {
+              return /^\s*\/\/.+$/s.test(solutionText) || /^\s*\/\*[\s\S]*\*\/$/s.test(solutionText);
+            }
+            if (lesson.language === "html") {
+              return /^\s*<!--[\s\S]*-->\s*$/s.test(solutionText);
+            }
+            if (lesson.language === "css") {
+              return /^\s*\/\*[\s\S]*\*\/$/s.test(solutionText);
+            }
+            return false;
+          };
+
           // Jeśli rozwiązanie zawiera warunek, a kod użytkownika nie (lub ma inny),
           // to sprawdzamy czy kluczowe elementy logiki są obecne.
           const logicKeywords = [
@@ -215,6 +234,19 @@ export default function LessonDemo({
               isCorrect = false;
               result.output = `Twój kod działa dla tego przypadku, ale brakuje w nim wymaganej logiki (np. użycia '${word}').`;
               break;
+            }
+          }
+
+          // Wymagaj dokładnego komentarza, jeśli rozwiązanie to sam komentarz
+          if (isCorrect && isCommentOnlySolution(lesson.content.solution)) {
+            const normalizedUserComment = trimAndNormalizeSpaces(code);
+            const normalizedExpectedComment = trimAndNormalizeSpaces(
+              lesson.content.solution,
+            );
+            if (normalizedUserComment !== normalizedExpectedComment) {
+              isCorrect = false;
+              result.output =
+                "Komentarz nie jest zgodny z oczekiwanym. Sprawdź dokładną treść.";
             }
           }
         }
