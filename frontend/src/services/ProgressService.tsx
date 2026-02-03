@@ -1,4 +1,5 @@
 import { apiFetch, authHeaders } from "./ApiClient";
+import { getAccessToken, isGuestMode } from "../utils/auth";
 
 export interface UserProgress {
   id?: string;
@@ -22,9 +23,34 @@ export interface CreateProgressInput {
 }
 
 class ProgressService {
+  private getGuestProgressKey(userId: string): string {
+    return `guest_progress_${userId}`;
+  }
+
+  private readGuestProgress(userId: string): UserProgress[] {
+    const raw = localStorage.getItem(this.getGuestProgressKey(userId));
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw) as UserProgress[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private writeGuestProgress(userId: string, progress: UserProgress[]) {
+    localStorage.setItem(
+      this.getGuestProgressKey(userId),
+      JSON.stringify(progress),
+    );
+  }
+
   async getUserProgress(userId: string): Promise<UserProgress[]> {
-    const token = localStorage.getItem("access_token");
+    const token = getAccessToken();
     if (!token) {
+      if (isGuestMode()) {
+        return this.readGuestProgress(userId);
+      }
       throw new Error("No access token");
     }
 
@@ -46,8 +72,33 @@ class ProgressService {
       attempts?: number;
     },
   ): Promise<UserProgress> {
-    const token = localStorage.getItem("access_token");
+    const token = getAccessToken();
     if (!token) {
+      if (isGuestMode()) {
+        const existing = this.readGuestProgress(userId);
+        const now = new Date().toISOString();
+        const current = existing.find((p) => p.lesson_id === lessonId);
+
+        const updated: UserProgress = {
+          id: current?.id,
+          user_id: userId,
+          lesson_id: lessonId,
+          status,
+          score: options?.score ?? current?.score,
+          attempts: options?.attempts ?? current?.attempts ?? 1,
+          completed_at: status === "completed" ? now : current?.completed_at,
+          time_spent_seconds: current?.time_spent_seconds,
+        };
+
+        const next = current
+          ? existing.map((p) =>
+              p.lesson_id === lessonId ? updated : p,
+            )
+          : [...existing, updated];
+
+        this.writeGuestProgress(userId, next);
+        return updated;
+      }
       throw new Error("No access token");
     }
 
