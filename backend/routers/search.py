@@ -92,25 +92,44 @@ async def search_content(
 async def validate_code(request: CodeValidationRequest):
     try:
         if request.language == "python":
-            return await code_executor.validate_python(
+            result = await code_executor.validate_python(
                 request.code, request.expected_output
             )
         elif request.language == "javascript":
-            return await code_executor.validate_javascript(
+            result = await code_executor.validate_javascript(
                 request.code, request.expected_output
             )
         elif request.language == "typescript":
-            return await code_executor.validate_typescript(
+            result = await code_executor.validate_typescript(
                 request.code, request.expected_output
             )
         elif request.language in ["html", "css"]:
-            return await code_executor.validate_html(
+            result = await code_executor.validate_html(
                 request.code, request.expected_output
             )
         else:
             raise HTTPException(
                 status_code=400, detail=f"Unsupported language: {request.language}"
             )
+
+        if (
+            result.success
+            and result.is_correct
+            and request.solution
+            and not request.expected_output.strip()
+        ):
+            ok, message = code_executor.validate_solution_match(
+                request.language, request.code, request.solution
+            )
+            if not ok:
+                return CodeValidationResponse(
+                    success=True,
+                    output=message or "Kod nie spełnia wymagań zadania.",
+                    error=None,
+                    is_correct=False,
+                )
+
+        return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

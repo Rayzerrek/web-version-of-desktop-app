@@ -115,10 +115,10 @@ export default function LessonDemo({
         setHtmlPreview(code);
       }
 
-      const result = await apiFetch<CodeValidationResponse>(`/validate_code`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+          const result = await apiFetch<CodeValidationResponse>(`/validate_code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
           code: isDOMInteraction
             ? `
             const __mockEl = {
@@ -174,6 +174,10 @@ export default function LessonDemo({
             : code,
           language: lesson.language,
           expectedOutput,
+          solution:
+            lesson.content.type === "exercise"
+              ? lesson.content.solution || ""
+              : "",
         }),
       });
 

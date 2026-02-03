@@ -8,6 +8,7 @@ class CodeValidationRequest(BaseModel):
     code: str = Field(..., max_length=10000, description="Code to validate")
     language: Literal["python", "javascript", "typescript", "html", "css"]
     expected_output: str = Field(..., max_length=1000, alias="expectedOutput")
+    solution: Optional[str] = Field(None, max_length=10000, description="Expected solution code")
     
     @field_validator('code')
     def validate_code(cls, v):

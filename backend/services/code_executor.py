@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+import re
 from typing import Tuple
 
 from constants import DEFAULT_CODE_TIMEOUT, MAX_OUTPUT_LENGTH
@@ -31,6 +32,44 @@ class CodeExecutor:
             return "", f"Kod wykonywał się zbyt długo (timeout {self.timeout}s)", 1
         except Exception as e:
             return "", f"Błąd wykonania: {str(e)}", 1
+
+    def _normalize_spaces(self, value: str) -> str:
+        return " ".join(value.strip().split())
+
+    def _normalize_strip_all_ws(self, value: str) -> str:
+        return re.sub(r"\s+", "", value.strip())
+
+    def _is_comment_only_solution(self, language: str, solution: str) -> bool:
+        if language == "python":
+            return re.match(r"^\s*#.+$", solution, re.DOTALL) is not None
+        if language in ["javascript", "typescript"]:
+            return (
+                re.match(r"^\s*//.+$", solution, re.DOTALL) is not None
+                or re.match(r"^\s*/\*[\s\S]*\*/\s*$", solution, re.DOTALL) is not None
+            )
+        if language == "html":
+            return re.match(r"^\s*<!--[\s\S]*-->\s*$", solution, re.DOTALL) is not None
+        if language == "css":
+            return re.match(r"^\s*/\*[\s\S]*\*/\s*$", solution, re.DOTALL) is not None
+        return False
+
+    def validate_solution_match(self, language: str, code: str, solution: str) -> Tuple[bool, str | None]:
+        if not solution or not solution.strip():
+            return True, None
+
+        if self._is_comment_only_solution(language, solution):
+            normalized_user = self._normalize_spaces(code)
+            normalized_expected = self._normalize_spaces(solution)
+            if normalized_user != normalized_expected:
+                return False, "Komentarz nie jest zgodny z oczekiwanym. Sprawdź dokładną treść."
+            return True, None
+
+        normalized_code = self._normalize_strip_all_ws(code)
+        normalized_solution = self._normalize_strip_all_ws(solution)
+        if normalized_code != normalized_solution:
+            return False, "Kod nie jest zgodny z oczekiwanym rozwiązaniem."
+
+        return True, None
 
     async def validate_python(
         self, code: str, expected_output: str
