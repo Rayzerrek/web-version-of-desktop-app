@@ -66,8 +66,8 @@ class CodeExecutor:
 
         normalized_code = self._normalize_strip_all_ws(code)
         normalized_solution = self._normalize_strip_all_ws(solution)
-        if normalized_code != normalized_solution:
-            return False, "Kod nie jest zgodny z oczekiwanym rozwiązaniem."
+        if normalized_solution not in normalized_code:
+            return False, "Kod nie zawiera oczekiwanego rozwiązania."
 
         return True, None
 
