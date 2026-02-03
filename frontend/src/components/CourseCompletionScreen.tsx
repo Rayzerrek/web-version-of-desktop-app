@@ -69,7 +69,7 @@ export default function CourseCompletionScreen({
             Ukończyłeś kurs "{course.title}"
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             <div className="bg-purple-100 dark:bg-purple-900 rounded-2xl p-6">
               <div className="text-4xl mb-2"></div>
               <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
